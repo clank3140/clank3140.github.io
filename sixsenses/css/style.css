@@ -1,0 +1,352 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&family=Noto+Serif+JP:wght@200&display=swap');
+
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.2rem;
+    margin: 0 auto;
+    font-family: 'Noto Sans JP', 'Noto Serif JP', '游ゴシック', YuGothic, 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, 'ＭＳ Ｐゴシック', serif;
+    color: #3f3f3f;
+    font-weight: 300;
+}
+
+span {
+    display: inline-block;
+}
+
+a {
+    color: #88e;
+    transition: 0.5s;
+}
+
+a:hover {
+    color: #8080BF;
+    transition: 0.5s;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    list-style: none;
+}
+
+@media screen and (max-width: 779px) {
+    body {
+        width: 100%;
+    }
+
+    header {
+        margin: 20px;
+    }
+
+    .flex {
+        flex-wrap: wrap;
+    }
+
+    .col-6 {
+        flex-basis: 100%;
+    }
+
+    .col-7 {
+        flex-basis: 100%;
+    }
+
+    .col-5 {
+        flex-basis: 100%;
+    }
+
+    .iframe {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%;
+        overflow: hidden;
+        margin: 80px 0;
+    }
+
+    .ja_l img {
+        width: 100%;
+        height: auto;
+        padding: 10px;
+    }
+
+    .ja_r img {
+        width: 240px;
+        height: auto;
+        padding: 20px 0;
+    }
+
+    .ja_r {
+        text-align: center;
+    }
+
+    img {
+        width: 100%;
+        height: auto;
+    }
+
+    #about {
+        padding: 60px 30px;
+        background-color: #f5f5ff;
+    }
+
+    #about p {
+        line-height: 35px;
+        font-size: 1.3rem;
+        letter-spacing: .1rem;
+        text-align: left;
+        font-family: 'Noto Serif JP', serif;
+    }
+}
+
+@media screen and (min-width: 780px) {
+    body {
+        width: 780px;
+    }
+
+    header {
+        margin: 80px 0;
+    }
+
+    .flex {
+        flex-wrap: nowrap;
+    }
+
+    .col-6 {
+        flex-basis: 50%;
+    }
+
+    .col-7 {
+        flex-basis: 58%;
+    }
+
+    .col-5 {
+        flex-basis: 42%;
+    }
+
+    .iframe {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%;
+        overflow: hidden;
+        margin: 80px 0;
+    }
+
+    .ja_l img {
+        width: 100%;
+        height: auto;
+    }
+
+    .ja_r img {
+        width: 100%;
+        height: auto;
+        padding: 180px 0px 180px 60px;
+    }
+
+    img {
+        width: 390px;
+        height: 220px;
+    }
+
+    #about {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        padding: 80px 0;
+        background-color: #f5f5ff;
+    }
+
+    #about p {
+        line-height: 45px;
+        font-size: 1.5rem;
+        letter-spacing: .3rem;
+        text-align: center;
+        font-family: 'Noto Serif JP', serif;
+    }
+}
+
+.jacket {
+    display: flex;
+}
+
+#crossfade iframe {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#tracklist {
+    margin: 80px 0;
+}
+
+.track {
+    display: flex;
+    margin: 60px 0;
+}
+
+.track__introdction {
+    margin: 0 40px;
+}
+
+.track__introdction__title {
+    line-height: 28px;
+    font-size: 1.4rem;
+    letter-spacing: .2rem;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+.track__introdction__credit {
+    line-height: 28px;
+    font-size: 1.4rem;
+    letter-spacing: .2rem;
+}
+
+.track__introdction__link {
+    line-height: 60px;
+    font-size: 1.3rem;
+    letter-spacing: .2rem;
+    text-decoration: underline;
+    color: #38f;
+}
+
+#download {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding: 80px 0 60px;
+    background-color: #f5f5ff;
+    text-align: center;
+}
+
+.btn {
+    display: block;
+    margin: 40px auto 40px;
+    border-radius: 40px;
+    height: 80px;
+    width: 280px;
+    line-height: 80px;
+    text-align: center;
+}
+
+.btn--download {
+    background-color: #aaf;
+    transition: 0.5s;
+}
+
+.btn--download:hover {
+    background-color: #8080BF;
+    transition: 0.5s;
+}
+
+.btn--download span {
+    font-size: 2rem;
+    color: #fff;
+}
+
+.btn--otayori span {
+    font-size: 1.6rem;
+    text-decoration: underline;
+}
+
+#credit {
+    margin: 60px 0 40px;
+}
+
+.credit__post {
+    line-height: 30px;
+    font-size: 1.5rem;
+    letter-spacing: .25rem;
+    text-align: center;
+    margin: 0 15px;
+    border-bottom: .5px #ddd solid;
+}
+
+.credit__name {
+    line-height: 30px;
+    font-size: 1.4rem;
+    letter-spacing: .25rem;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.credit__others {
+    display: flex;
+}
+
+.credit__introdction__link {
+    margin-bottom: 60px;
+    font-size: 1.3rem;
+    letter-spacing: .2rem;
+    text-decoration: underline;
+    text-align: center;
+}
+
+.footer {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* lyricページ */
+
+.tracks {
+    margin: 40px 10px;
+    padding: 0 15px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+}
+
+.track__introdction__lyrics,
+.track__introdction__comments,
+.track__introdction__screenshots {
+    line-height: 40px;
+    font-size: 1.6rem;
+    letter-spacing: .3rem;
+    margin-top: 20px;
+    font-weight: 400;
+}
+
+.track__introdction__lyric,
+.track__introdction__comment {
+    line-height: 24px;
+    font-size: 1.25rem;
+    letter-spacing: .15rem;
+    margin-bottom: 20px;
+}
+
+.sns {
+    font-size: 1.2rem;
+    margin-left: 5px;
+    letter-spacing: .5px;
+    text-decoration: underline;
+}
+
+/* staffページ */
+.staff {
+    margin: 30px 20px;
+}
+
+.back {
+    display: block;
+    width: 80px;
+    margin: 20px auto 40px;
+    font-size: 3rem;
+    color: #ccc;
+    text-decoration: none;
+    text-align: center;
+}
