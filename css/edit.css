@@ -1,0 +1,4 @@
+video.back-video {
+    filter: brightness(40%);
+    filter: blur(10px);
+}
