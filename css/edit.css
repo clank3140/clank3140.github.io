@@ -6,3 +6,27 @@ video.back-video {
     display: flex;
     align-self: end;
 }
+
+p {
+    font-family: "zen-kaku-gothic-new", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+h2 {
+    font-family: "zen-kaku-gothic-new", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.nav-item {
+    font-family: "zen-kaku-gothic-new", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.navbar-brand {
+    font-family: "zen-kaku-gothic-new", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+}

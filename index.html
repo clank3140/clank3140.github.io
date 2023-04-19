@@ -128,6 +128,10 @@ https://templatemo.com/tm-560-astro-motion
                   </div>
                   <a href="https://www.clank.work/sixsenses/">View more</a>
                 </figcaption>
+                <p>
+                  コンピレーションアルバム制作を企画し、プロジェクトリーダーとして動きました。<br>
+                  チーム単位で複数のMVを制作していますが、その中の1チームで動画編集も担当しました。
+                </p>
               </figure>
               <figure class="effect-julia item">
                 <img src="images/random-todo-notes.png" alt="Android app 'Random Todo Notes'">
@@ -140,6 +144,10 @@ https://templatemo.com/tm-560-astro-motion
                   <a href="https://play.google.com/store/apps/details?id=net.mohyo.works.randomToDoNotes">View more</a>
                 </figcaption>
               </figure>
+              <p>
+                Androidのアプリを開発するにあたり、UIデザインおよびストアに掲載するための画像作成などを担当しました。<br>
+                エンジニアと協力してものを作るのは楽しいという超重要な知見を得ました。
+              </p>
             </div>
           </div>
         </li>
@@ -235,6 +243,36 @@ https://templatemo.com/tm-560-astro-motion
   <script src="js/bootstrap.min.js"></script>
   <script src="js/slick.js"></script>
   <script src="js/templatemo-script.js"></script>
+  <script>
+    (function (d) {
+      var config = {
+          kitId: 'lsl4eoq',
+          scriptTimeout: 3000,
+          async: true
+        },
+        h = d.documentElement,
+        t = setTimeout(function () {
+          h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+        }, config.scriptTimeout),
+        tk = d.createElement("script"),
+        f = false,
+        s = d.getElementsByTagName("script")[0],
+        a;
+      h.className += " wf-loading";
+      tk.src = 'https://use.typekit.net/' + config.kitId + '.js';
+      tk.async = true;
+      tk.onload = tk.onreadystatechange = function () {
+        a = this.readyState;
+        if (f || a && a != "complete" && a != "loaded") return;
+        f = true;
+        clearTimeout(t);
+        try {
+          Typekit.load(config)
+        } catch (e) {}
+      };
+      s.parentNode.insertBefore(tk, s)
+    })(document);
+  </script>
 </body>
 
 </html>
