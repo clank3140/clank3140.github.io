@@ -1,0 +1,111 @@
+video.back-video {
+    filter: brightness(40%) blur(10px);
+}
+
+.navbar .navbar-nav .nav-item.selected .nav-link,
+.navbar .navbar-nav .nav-item .nav-link:hover {
+    color: #ff00ff;
+    border-bottom: 1px solid #ff00ff;
+}
+
+.cd-slider-nav li.selected a+.circle,
+.navbar .navbar-nav .nav-item .nav-link:hover+.circle {
+    background-color: #ff00ff;
+}
+
+.intro-right {
+    display: flex;
+    align-self: end;
+}
+
+p {
+    font-family: "zen-kaku-gothic-new", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+a {
+    color: #ffff00;
+    text-decoration: underline;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: #00ffff;
+}
+
+a.navbar-brand:hover {
+    color: #cccccc;
+}
+
+.navbar-brand {
+    font-size: 1.4rem;
+}
+
+h1 {
+    margin-bottom: 0;
+}
+
+h2,
+h3 {
+    font-family: "zen-kaku-gothic-new", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.nav-item {
+    font-family: "zen-kaku-gothic-new", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    text-align: center;
+}
+
+.navbar-brand {
+    font-family: "zen-kaku-gothic-new", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+}
+
+figure.effect-julia>p {
+    background: none;
+    color: #ffffff;
+    margin: 0;
+    padding: 1rem 1rem;
+    transform: none;
+    text-align: left;
+}
+
+@media (max-width: 600px) {
+
+    .intro-left,
+    .content-pad {
+        padding: 20px 25px;
+        margin-bottom: 10px;
+    }
+
+    #tm-nav {
+        margin-top: 10px;
+    }
+
+    .page-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .navbar-collapse {
+        background-color: rgb(255 255 255 / 91%);
+    }
+
+    .navbar .navbar-nav .nav-item .nav-link {
+        color: #575757;
+        border-bottom: 1px solid #575757;
+    }
+
+    .navbar .circle {
+        background-color: #575757;
+    }
+
+    .navbar .navbar-nav .nav-item:last-child {
+        margin-right: 15px;
+    }
+}
