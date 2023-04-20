@@ -57,4 +57,13 @@ figure.effect-julia>p {
         padding: 20px 25px;
         margin-bottom: 10px;
     }
+
+    #tm-nav {
+        margin-top: 10px;
+    }
+
+    .page-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
 }
