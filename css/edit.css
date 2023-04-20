@@ -32,3 +32,12 @@ h3 {
     font-weight: 900;
     font-style: normal;
 }
+
+figure.effect-julia>p {
+    background: none;
+    color: #ffffff;
+    margin: 0;
+    padding: 1rem 1rem;
+    transform: none;
+    text-align: left;
+}
