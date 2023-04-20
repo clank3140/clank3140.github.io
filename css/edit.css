@@ -13,6 +13,14 @@ p {
     font-style: normal;
 }
 
+.navbar-brand {
+    font-size: 1.4rem;
+}
+
+h1 {
+    margin-bottom: 0;
+}
+
 h2,
 h3 {
     font-family: "zen-kaku-gothic-new", sans-serif;
@@ -40,4 +48,12 @@ figure.effect-julia>p {
     padding: 1rem 1rem;
     transform: none;
     text-align: left;
+}
+
+@media (max-width: 600px) {
+
+    .intro-left,
+    .content-pad {
+        padding: 20px 25px;
+    }
 }
