@@ -55,5 +55,6 @@ figure.effect-julia>p {
     .intro-left,
     .content-pad {
         padding: 20px 25px;
+        margin-bottom: 10px;
     }
 }
