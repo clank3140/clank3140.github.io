@@ -13,7 +13,8 @@ p {
     font-style: normal;
 }
 
-h2 {
+h2,
+h3 {
     font-family: "zen-kaku-gothic-new", sans-serif;
     font-weight: 700;
     font-style: normal;
