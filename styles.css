@@ -3,6 +3,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #121212;
+    background: linear-gradient(135deg, #0a1520 0%, #121212 50%, #1e0a14 100%) fixed;
     color: #ffffff;
     display: flex;
     flex-direction: column;
