@@ -218,7 +218,7 @@ section {
 .project-item img {
     width: 100%;
     height: 185px;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 12px;
     transition: opacity 0.3s ease;
     margin-bottom: 10px;
