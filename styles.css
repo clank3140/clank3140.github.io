@@ -205,7 +205,7 @@ p {
 .nav-links-dropdown {
     display: none;
     position: absolute;
-    top: calc(100% + 12px);
+    top: calc(100% + 30px);
     right: -8px;
     background: rgba(15, 15, 25, 0.88);
     backdrop-filter: blur(24px) saturate(160%);
