@@ -459,10 +459,12 @@ p.social-icon {
     }
 
     .nav-links-dropdown {
-        right: auto;
-        left: 50%;
-        transform: translateX(-50%);
-        min-width: calc(100vw - 40px);
+        position: fixed;
+        top: 80px;
+        left: 12px;
+        right: 12px;
+        transform: none;
+        min-width: unset;
         grid-template-columns: 1fr 1fr;
     }
 
