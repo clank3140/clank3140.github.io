@@ -23,13 +23,35 @@
 
 <body>
   <header class="header">
-    <h1 class="site-title">Quartu - Clank's works</h1>
+    <h1 class="site-title">Quartu</h1>
     <nav class="nav">
-      <ul>
+      <ul class="nav-internal">
         <li><a href="#about"><i class="fa-solid fa-address-card"></i><span>about</span></a></li>
         <li><a href="#projects"><i class="fa-solid fa-folder-open"></i><span>portfolio</span></a></li>
         <li><a href="#other"><i class="fa-solid fa-bolt"></i><span>other</span></a></li>
       </ul>
+      <div class="nav-divider"></div>
+      <div class="nav-external">
+        <button class="nav-links-toggle" aria-expanded="false" aria-label="外部リンク一覧">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i><span>links</span>
+        </button>
+        <ul class="nav-links-dropdown">
+          <li><a href="https://www.youtube.com/@clank3140" target="_blank" rel="noopener noreferrer"><i
+                class="fa-solid fa-arrow-up-right-from-square"></i>YouTube</a></li>
+          <li><a href="https://www.nicovideo.jp/user/60412547/mylist" target="_blank" rel="noopener noreferrer"><i
+                class="fa-solid fa-arrow-up-right-from-square"></i>niconico</a></li>
+          <li><a href="https://note.com/clank3140" target="_blank" rel="noopener noreferrer"><i
+                class="fa-solid fa-arrow-up-right-from-square"></i>note</a></li>
+          <li><a href="https://clank.booth.pm/items/6185536" target="_blank" rel="noopener noreferrer"><i
+                class="fa-solid fa-arrow-up-right-from-square"></i>BOOTH</a></li>
+          <li><a href="https://suzuri.jp/FruorWorks" target="_blank" rel="noopener noreferrer"><i
+                class="fa-solid fa-arrow-up-right-from-square"></i>SUZURI</a></li>
+          <li><a href="https://talto.cc/users/NnACZXCGAUP7USJlLb1cKogWXnZ2" target="_blank" rel="noopener noreferrer"><i
+                class="fa-solid fa-arrow-up-right-from-square"></i>TALTO</a></li>
+          <li><a href="https://soundcloud.com/clank3140" target="_blank" rel="noopener noreferrer"><i
+                class="fa-solid fa-arrow-up-right-from-square"></i>SoundCloud</a></li>
+        </ul>
+      </div>
     </nav>
   </header>
 
@@ -181,6 +203,18 @@
   <footer class="footer">
     <p>&copy; 2026 Clank</p>
   </footer>
+
+  <script>
+    const toggle = document.querySelector('.nav-links-toggle');
+    document.addEventListener('click', function (e) {
+      if (toggle.contains(e.target)) {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+      } else {
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  </script>
 </body>
 
 </html>
