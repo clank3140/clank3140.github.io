@@ -147,11 +147,11 @@ p {
     color: #ff00ff;
     text-decoration: none;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
+    gap: 3px;
+    padding: 6px 12px;
     border-radius: 8px;
-    position: relative;
     transition: background 0.2s;
 }
 
@@ -166,20 +166,12 @@ p {
 }
 
 .nav-internal a span {
-    display: inline-block;
-    opacity: 0;
-    transform: translateX(-6px);
-    transition: opacity 0.15s ease, transform 0.15s ease;
-    white-space: nowrap;
-    font-size: 0.85rem;
-    pointer-events: none;
-    position: absolute;
-    left: calc(100% - 4px);
-}
-
-.nav-internal a:hover span {
     opacity: 1;
-    transform: translateX(0);
+    transform: none;
+    position: static;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    pointer-events: auto;
 }
 
 .nav-external {
@@ -454,28 +446,12 @@ p.social-icon{
         justify-content: center;
     }
 
-    /* モバイルはテキストを常時表示 */
     .nav-internal {
         gap: 0;
     }
 
     .nav-internal a {
-        flex-direction: column;
-        align-items: center;
-        gap: 3px;
         padding: 8px 10px;
-    }
-
-    .nav-internal a i {
-        font-size: 1.2em;
-    }
-
-    .nav-internal a span {
-        opacity: 1;
-        transform: none;
-        position: static;
-        font-size: 0.72rem;
-        pointer-events: auto;
     }
 
     .nav-links-toggle {
