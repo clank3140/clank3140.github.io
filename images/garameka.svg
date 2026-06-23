@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="garameka-do web apps">
+  <defs>
+    <linearGradient id="gbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E1117"/>
+      <stop offset="1" stop-color="#0A0C10"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#gbg)"/>
+  <!-- window -->
+  <rect x="150" y="90" width="500" height="300" rx="18" fill="#0A0C10" stroke="#5EE6D0" stroke-opacity="0.5" stroke-width="3"/>
+  <line x1="150" y1="138" x2="650" y2="138" stroke="#ffffff" stroke-opacity="0.12" stroke-width="2"/>
+  <circle cx="182" cy="114" r="6" fill="#5EE6D0" fill-opacity="0.8"/>
+  <circle cx="204" cy="114" r="6" fill="#ffffff" fill-opacity="0.2"/>
+  <circle cx="226" cy="114" r="6" fill="#ffffff" fill-opacity="0.2"/>
+  <!-- app tiles -->
+  <g fill="none" stroke="#5EE6D0" stroke-opacity="0.45" stroke-width="2.5">
+    <rect x="186" y="166" width="120" height="84" rx="10"/>
+    <rect x="340" y="166" width="120" height="84" rx="10"/>
+    <rect x="494" y="166" width="120" height="84" rx="10"/>
+    <rect x="186" y="270" width="120" height="84" rx="10"/>
+    <rect x="340" y="270" width="120" height="84" rx="10"/>
+    <rect x="494" y="270" width="120" height="84" rx="10"/>
+  </g>
+  <g fill="#7AA2F7" fill-opacity="0.55">
+    <circle cx="246" cy="200" r="9"/>
+    <circle cx="400" cy="200" r="9"/>
+    <circle cx="554" cy="200" r="9"/>
+    <circle cx="246" cy="304" r="9"/>
+    <circle cx="400" cy="304" r="9"/>
+    <circle cx="554" cy="304" r="9"/>
+  </g>
+  <text x="400" y="448" text-anchor="middle" fill="#5EE6D0" fill-opacity="0.9" font-family="'IBM Plex Mono', monospace" font-size="30" letter-spacing="6">garameka-do</text>
+</svg>
