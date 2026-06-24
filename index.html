@@ -64,7 +64,6 @@
   <main class="content">
     <section id="about" class="about">
       <div class="section-head">
-        <span class="eyebrow">// profile</span>
         <h2>about</h2>
       </div>
       <div class="profile-container">
@@ -96,7 +95,6 @@
 
     <section id="projects" class="projects">
       <div class="section-head">
-        <span class="eyebrow">// works</span>
         <h2>portfolio</h2>
       </div>
       <div class="project-list">
@@ -217,37 +215,55 @@
 
     <section id="gallery" class="gallery">
       <div class="section-head">
-        <span class="eyebrow">// illustration</span>
         <h2>gallery</h2>
       </div>
-      <p class="section-lead">気ままに描いたイラストを並べています。クリックで拡大表示。</p>
+      <p class="section-lead">素敵な絵描きさんたちに描いていただいたイラストを並べています。クリックで拡大表示。</p>
       <div class="gallery-grid">
-        <button class="gallery-item" type="button" data-full="images/gallery/art-01.svg"
-          aria-label="イラスト 1 を拡大表示">
-          <img src="images/gallery/art-01.svg" alt="イラスト作品 1" loading="lazy">
-        </button>
-        <button class="gallery-item" type="button" data-full="images/gallery/art-02.svg"
-          aria-label="イラスト 2 を拡大表示">
-          <img src="images/gallery/art-02.svg" alt="イラスト作品 2" loading="lazy">
-        </button>
-        <button class="gallery-item" type="button" data-full="images/gallery/art-03.svg"
-          aria-label="イラスト 3 を拡大表示">
-          <img src="images/gallery/art-03.svg" alt="イラスト作品 3" loading="lazy">
-        </button>
-        <button class="gallery-item" type="button" data-full="images/gallery/art-04.svg"
-          aria-label="イラスト 4 を拡大表示">
-          <img src="images/gallery/art-04.svg" alt="イラスト作品 4" loading="lazy">
-        </button>
-        <button class="gallery-item" type="button" data-full="images/gallery/art-05.svg"
-          aria-label="イラスト 5 を拡大表示">
-          <img src="images/gallery/art-05.svg" alt="イラスト作品 5" loading="lazy">
-        </button>
+        <figure class="gallery-item">
+          <button class="gallery-thumb" type="button" data-full="images/gallery/art-01.svg"
+            data-artist="（イラストレーター名）" aria-label="イラスト 1 を拡大表示">
+            <img src="images/gallery/art-01.svg" alt="イラスト作品 1" loading="lazy">
+          </button>
+          <figcaption class="gallery-credit"><i class="fa-solid fa-pen-nib"></i><span>illust.
+              （イラストレーター名）</span></figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <button class="gallery-thumb" type="button" data-full="images/gallery/art-02.svg"
+            data-artist="（イラストレーター名）" aria-label="イラスト 2 を拡大表示">
+            <img src="images/gallery/art-02.svg" alt="イラスト作品 2" loading="lazy">
+          </button>
+          <figcaption class="gallery-credit"><i class="fa-solid fa-pen-nib"></i><span>illust.
+              （イラストレーター名）</span></figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <button class="gallery-thumb" type="button" data-full="images/gallery/art-03.svg"
+            data-artist="（イラストレーター名）" aria-label="イラスト 3 を拡大表示">
+            <img src="images/gallery/art-03.svg" alt="イラスト作品 3" loading="lazy">
+          </button>
+          <figcaption class="gallery-credit"><i class="fa-solid fa-pen-nib"></i><span>illust.
+              （イラストレーター名）</span></figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <button class="gallery-thumb" type="button" data-full="images/gallery/art-04.svg"
+            data-artist="（イラストレーター名）" aria-label="イラスト 4 を拡大表示">
+            <img src="images/gallery/art-04.svg" alt="イラスト作品 4" loading="lazy">
+          </button>
+          <figcaption class="gallery-credit"><i class="fa-solid fa-pen-nib"></i><span>illust.
+              （イラストレーター名）</span></figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <button class="gallery-thumb" type="button" data-full="images/gallery/art-05.svg"
+            data-artist="（イラストレーター名）" aria-label="イラスト 5 を拡大表示">
+            <img src="images/gallery/art-05.svg" alt="イラスト作品 5" loading="lazy">
+          </button>
+          <figcaption class="gallery-credit"><i class="fa-solid fa-pen-nib"></i><span>illust.
+              （イラストレーター名）</span></figcaption>
+        </figure>
       </div>
     </section>
 
     <section id="other" class="other">
       <div class="section-head">
-        <span class="eyebrow">// misc</span>
         <h2>other</h2>
       </div>
       <h3>TRPGが好き</h3>
@@ -296,7 +312,7 @@
     }
 
     // ライトボックス
-    const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
+    const galleryItems = Array.from(document.querySelectorAll('.gallery-thumb'));
     const lightbox = document.getElementById('lightbox');
     const lbImg = lightbox.querySelector('.lightbox-img');
     const lbCaption = lightbox.querySelector('.lightbox-caption');
@@ -312,7 +328,8 @@
       const img = btn.querySelector('img');
       lbImg.src = btn.dataset.full || img.src;
       lbImg.alt = img.alt || '';
-      lbCaption.textContent = (current + 1) + ' / ' + galleryItems.length + (img.alt ? '  ·  ' + img.alt : '');
+      const artist = btn.dataset.artist;
+      lbCaption.textContent = (current + 1) + ' / ' + galleryItems.length + (artist ? '  ·  illust. ' + artist : '');
       lbImg.style.animation = 'none';
       void lbImg.offsetWidth;
       lbImg.style.animation = '';
