@@ -18,7 +18,9 @@
   <link rel="icon" href="images/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>
@@ -27,11 +29,15 @@
     <nav class="nav">
       <ul class="nav-internal">
         <li><a href="#about"><i class="fa-solid fa-address-card"></i><span>about</span></a></li>
-        <li><a href="#projects"><i class="fa-solid fa-folder-open"></i><span>portfolio</span></a></li>
+        <li><a href="#works"><i class="fa-solid fa-folder-open"></i><span>works</span></a></li>
+        <li><a href="#gallery"><i class="fa-solid fa-images"></i><span>gallery</span></a></li>
         <li><a href="#other"><i class="fa-solid fa-bolt"></i><span>other</span></a></li>
       </ul>
       <div class="nav-divider"></div>
       <div class="nav-external">
+        <a class="nav-apps" href="https://garameka-do.netlify.app/" target="_blank" rel="noopener noreferrer">
+          <i class="fa-solid fa-table-cells-large"></i><span>apps</span>
+        </a>
         <button class="nav-links-toggle" aria-expanded="false" aria-label="外部リンク一覧">
           <i class="fa-solid fa-arrow-up-right-from-square"></i><span>links</span>
         </button>
@@ -57,10 +63,12 @@
 
   <main class="content">
     <section id="about" class="about">
-      <h2>about</h2>
+      <div class="section-head">
+        <h2>about</h2>
+      </div>
       <div class="profile-container">
         <div class="profile-info">
-          <img src="images/card.png" alt="clank" class="profile-avatar">
+          <img src="images/card.png" alt="Clank" class="profile-avatar">
           <p class="profile-name">Clank</p>
           <p class="profile-description">くらんくと読みます。日曜創作男目指人間。<br>デザインしたりTRPG遊んだりVR潜ったり。</p>
         </div>
@@ -85,115 +93,173 @@
       </div>
     </section>
 
-    <section id="projects" class="projects">
-      <h2>portfolio</h2>
+    <section id="works" class="works">
+      <div class="section-head">
+        <h2>works</h2>
+      </div>
       <div class="project-list">
-        <div class="project-item">
-          <img src="images/sixsenses.png" alt="six senses">
-          <div class="project-title">
-            <div class="title"><span>six senses<a href="https://www.clank.work/sixsenses/" rel="noopener noreferrer"
-                  target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>VOCALOIDコンピアルバム(主催)</p>
+        <a class="project-item project-item--featured" href="https://garameka-do.netlify.app/" target="_blank"
+          rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/garameka.svg" alt="garameka-do" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">web apps</span>
+            <span class="project-name">garameka-do<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">自作Webアプリの詰め合わせ</p>
           </div>
-        </div>
-        <div class="project-item">
-          <img src="images/random-todo-notes.png" alt="Random ToDo Notes">
-          <div class="project-title">
-            <div class="title"><span>Random ToDo Notes<a
-                  href="https://play.google.com/store/apps/details?id=net.mohyo.works.randomToDoNotes"
-                  rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>スマホアプリ UIデザインした</p>
+        </a>
+        <a class="project-item" href="https://www.clank.work/sixsenses/" target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/sixsenses.png" alt="six senses" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">music</span>
+            <span class="project-name">six senses<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">VOCALOIDコンピアルバム(主催)</p>
           </div>
-        </div>
-        <div class="project-item">
-          <img src="images/youtube.png" alt="YouTube">
-          <div class="project-title">
-            <div class="title"><span>YouTube<a href="https://www.youtube.com/@clank3140" rel="noopener noreferrer"
-                  target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>世に出しやすい動画はここに</p>
+        </a>
+        <a class="project-item" href="https://play.google.com/store/apps/details?id=net.mohyo.works.randomToDoNotes"
+          target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/random-todo-notes.png" alt="Random ToDo Notes" loading="lazy">
           </div>
-        </div>
-        <div class="project-item">
-          <img src="images/kaichu-dokei.png" alt="manga">
-          <div class="project-title">
-            <div class="title"><span>manga<a href="https://x.com/clank3140_mo_de/status/1840062420087386158"
-                  rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>マンガを作りました</p>
+          <div class="project-body">
+            <span class="project-tag">ui design</span>
+            <span class="project-name">Random ToDo Notes<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">スマホアプリのUIをデザイン</p>
           </div>
-        </div>
-        <div class="project-item">
-          <img src="images/vrc_booth.png" alt="BOOTH">
-          <div class="project-title">
-            <div class="title"><span>BOOTH<a href="https://clank.booth.pm/items/6185536" rel="noopener noreferrer"
-                  target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>VRChatギミック開発</p>
+        </a>
+        <a class="project-item" href="https://www.youtube.com/@clank3140" target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/youtube.png" alt="YouTube" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">video</span>
+            <span class="project-name">YouTube<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">世に出しやすい動画はここに</p>
           </div>
-        </div>
-        <div class="project-item">
-          <img src="images/niconico_profile.png" alt="ニコニコ動画">
-          <div class="project-title">
-            <div class="title"><span>niconico<a href="https://www.nicovideo.jp/user/60412547/mylist"
-                  rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>MAD・ボカロMVいろいろ作った</p>
+        </a>
+        <a class="project-item" href="https://x.com/clank3140_mo_de/status/1840062420087386158" target="_blank"
+          rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/kaichu-dokei.png" alt="manga" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">comic</span>
+            <span class="project-name">manga<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">マンガを作りました</p>
           </div>
-        </div>
-        <div class="project-item">
-          <img src="images/suzuri.png" alt="Tシャツ制作">
-          <div class="project-title">
-            <div class="title"><span>SUZURI<a href="https://suzuri.jp/FruorWorks" rel="noopener noreferrer"
-                  target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>友達とTシャツなどを作っている</p>
+        </a>
+        <a class="project-item" href="https://clank.booth.pm/items/6185536" target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/vrc_booth.png" alt="BOOTH" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">vrchat</span>
+            <span class="project-name">BOOTH<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">VRChatギミック開発</p>
           </div>
-        </div>
-        <div class="project-item">
-          <img src="images/vrchat.png" alt="VR Chat">
-          <div class="project-title">
-            <div class="title"><span>VR Chat<a
-                  href="https://vrchat.com/home/user/usr_96d22133-b5ea-4b56-b9f1-5ab136d31bbc" rel="noopener noreferrer"
-                  target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>VRでもぶらぶらしている</p>
+        </a>
+        <a class="project-item" href="https://www.nicovideo.jp/user/60412547/mylist" target="_blank"
+          rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/niconico_profile.png" alt="niconico" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">video</span>
+            <span class="project-name">niconico<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">MAD・ボカロMVいろいろ作った</p>
           </div>
-        </div>
-        <div class="project-item">
-          <img src="images/trpg_booth.png" alt="Fruor Studio BOOTH">
-          <div class="project-title">
-            <div class="title"><span>Fruor Studio BOOTH<a href="https://fruor-studio.booth.pm" rel="noopener noreferrer"
-                  target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>合作したTRPGシナリオ</p>
+        </a>
+        <a class="project-item" href="https://suzuri.jp/FruorWorks" target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/suzuri.png" alt="SUZURI" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">goods</span>
+            <span class="project-name">SUZURI<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">友達とTシャツなどを作っている</p>
           </div>
-        </div>
-        <div class="project-item">
-          <img src="images/trpg_talto.png" alt="TALTO">
-          <div class="project-title">
-            <div class="title"><span>TALTO<a href="https://talto.cc/users/NnACZXCGAUP7USJlLb1cKogWXnZ2"
-                  rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>1人で書いたTRPGシナリオ</p>
+        </a>
+        <a class="project-item" href="https://vrchat.com/home/user/usr_96d22133-b5ea-4b56-b9f1-5ab136d31bbc"
+          target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/vrchat.png" alt="VRChat" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">vrchat</span>
+            <span class="project-name">VRChat<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">VRでもぶらぶらしている</p>
           </div>
-        </div>
-        <div class="project-item">
-          <img src="images/soundcloud.png" alt="SoundCloud">
-          <div class="project-title">
-            <div class="title"><span>SoundCloud<a href="https://soundcloud.com/clank3140" rel="noopener noreferrer"
-                  target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>MASHUPに挑戦中</p>
+        </a>
+        <a class="project-item" href="https://fruor-studio.booth.pm" target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/trpg_booth.png" alt="Fruor Studio BOOTH" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">trpg</span>
+            <span class="project-name">Fruor Studio BOOTH<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">合作したTRPGシナリオ</p>
           </div>
-        </div>
-        <div class="project-item">
-          <img src="images/note.png" alt="note">
-          <div class="project-title">
-            <div class="title"><span>note<a href="https://note.com/clank3140" rel="noopener noreferrer"
-                  target="_blank"><i class="fa-solid fa-link"></i></a></span></div>
-            <p>だいたいTRPGのことを書いている</p>
+        </a>
+        <a class="project-item" href="https://talto.cc/users/NnACZXCGAUP7USJlLb1cKogWXnZ2" target="_blank"
+          rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/trpg_talto.png" alt="TALTO" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">trpg</span>
+            <span class="project-name">TALTO<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">1人で書いたTRPGシナリオ</p>
           </div>
-        </div>
+        </a>
+        <a class="project-item" href="https://soundcloud.com/clank3140" target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/soundcloud.png" alt="SoundCloud" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">music</span>
+            <span class="project-name">SoundCloud<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">MASHUPに挑戦中</p>
+          </div>
+        </a>
+        <a class="project-item" href="https://note.com/clank3140" target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb"><img src="images/note.png" alt="note" loading="lazy"></div>
+          <div class="project-body">
+            <span class="project-tag">writing</span>
+            <span class="project-name">note<i class="fa-solid fa-arrow-up-right"></i></span>
+            <p class="project-desc">だいたいTRPGのことを書いている</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section id="gallery" class="gallery">
+      <div class="section-head">
+        <h2>gallery</h2>
+      </div>
+      <p class="section-lead">イラストレーター様たちに描いていただいたイラストを並べています。クリックで拡大表示できます。<br>※skeb上でサイト掲載の旨をお伝えしてあります</p>
+      <div class="gallery-grid">
+        <figure class="gallery-item">
+          <button class="gallery-thumb" type="button" data-full="images/gallery/illust-01.png" data-artist="こんくてん 様"
+            aria-label="イラスト 1 を拡大表示">
+            <img src="images/gallery/illust-01.png" alt="イラスト作品 1" loading="lazy">
+          </button>
+          <figcaption class="gallery-credit"><i class="fa-solid fa-pen-nib"></i><span>illust.
+              こんくてん 様</span></figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <button class="gallery-thumb" type="button" data-full="images/gallery/illust-02.png" data-artist="lv9kaito 様"
+            aria-label="イラスト 2 を拡大表示">
+            <img src="images/gallery/illust-02.png" alt="イラスト作品 2" loading="lazy">
+          </button>
+          <figcaption class="gallery-credit"><i class="fa-solid fa-pen-nib"></i><span>illust.
+              lv9kaito 様</span></figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <button class="gallery-thumb" type="button" data-full="images/gallery/illust-03.png" data-artist="杨 様"
+            aria-label="イラスト 3 を拡大表示">
+            <img src="images/gallery/illust-03.png" alt="イラスト作品 3" loading="lazy">
+          </button>
+          <figcaption class="gallery-credit"><i class="fa-solid fa-pen-nib"></i><span>illust.
+              杨 様</span></figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <button class="gallery-thumb" type="button" data-full="images/gallery/illust-04.png" data-artist="202 様"
+            aria-label="イラスト 4 を拡大表示">
+            <img src="images/gallery/illust-04.png" alt="イラスト作品 4" loading="lazy">
+          </button>
+          <figcaption class="gallery-credit"><i class="fa-solid fa-pen-nib"></i><span>illust.
+              202 様</span></figcaption>
+        </figure>
       </div>
     </section>
 
     <section id="other" class="other">
-      <h2>other</h2>
+      <div class="section-head">
+        <h2>other</h2>
+      </div>
       <h3>TRPGが好き</h3>
       <p>時々TRPGをやってます。エモクロアメインです。</p>
-      <p>制作したシナリオは、相方(？)のmohyoとの共同サークル「Fruor Studio」のBOOTHやTALTOにて公開中です！</p>
+      <p>シナリオを制作することもあり、BOOTHやTALTOにて公開中です！</p>
       <h3>VRChatにもいます</h3>
       <p>お気軽に「Clank - クランク」までフレンド申請してください。<br>NAGiSAにもよく出没してる。</p>
       <img class="vrc" src="images/vrc.png" alt="VRChat">
@@ -204,7 +270,16 @@
     <p>&copy; 2026 Clank</p>
   </footer>
 
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="イラスト拡大表示" aria-hidden="true">
+    <button class="lightbox-close" type="button" aria-label="閉じる"><i class="fa-solid fa-xmark"></i></button>
+    <button class="lightbox-prev" type="button" aria-label="前の作品"><i class="fa-solid fa-chevron-left"></i></button>
+    <img class="lightbox-img" src="" alt="">
+    <button class="lightbox-next" type="button" aria-label="次の作品"><i class="fa-solid fa-chevron-right"></i></button>
+    <div class="lightbox-caption"></div>
+  </div>
+
   <script>
+    // 外部リンクのドロップダウン
     const toggle = document.querySelector('.nav-links-toggle');
     document.addEventListener('click', function (e) {
       if (toggle.contains(e.target)) {
@@ -212,6 +287,81 @@
         toggle.setAttribute('aria-expanded', String(!expanded));
       } else {
         toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // カードのカーソル追従スペキュラ
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduceMotion) {
+      document.querySelectorAll('.project-item').forEach(function (card) {
+        card.addEventListener('pointermove', function (e) {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+          card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+        });
+      });
+    }
+
+    // ライトボックス
+    const galleryItems = Array.from(document.querySelectorAll('.gallery-thumb'));
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = lightbox.querySelector('.lightbox-img');
+    const lbCaption = lightbox.querySelector('.lightbox-caption');
+    const lbClose = lightbox.querySelector('.lightbox-close');
+    const lbPrev = lightbox.querySelector('.lightbox-prev');
+    const lbNext = lightbox.querySelector('.lightbox-next');
+    let current = 0;
+    let lastFocused = null;
+
+    function showImage(i) {
+      current = (i + galleryItems.length) % galleryItems.length;
+      const btn = galleryItems[current];
+      const img = btn.querySelector('img');
+      lbImg.src = btn.dataset.full || img.src;
+      lbImg.alt = img.alt || '';
+      const artist = btn.dataset.artist;
+      lbCaption.textContent = (current + 1) + ' / ' + galleryItems.length + (artist ? '  ·  illust. ' + artist : '');
+      lbImg.style.animation = 'none';
+      void lbImg.offsetWidth;
+      lbImg.style.animation = '';
+    }
+
+    function openLightbox(i) {
+      lastFocused = document.activeElement;
+      showImage(i);
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      lbClose.focus();
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (lastFocused) lastFocused.focus();
+    }
+
+    galleryItems.forEach(function (btn, i) {
+      btn.addEventListener('click', function () { openLightbox(i); });
+    });
+    lbClose.addEventListener('click', closeLightbox);
+    lbPrev.addEventListener('click', function () { showImage(current - 1); });
+    lbNext.addEventListener('click', function () { showImage(current + 1); });
+    lightbox.addEventListener('click', function (e) {
+      if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!lightbox.classList.contains('is-open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowRight') showImage(current + 1);
+      else if (e.key === 'ArrowLeft') showImage(current - 1);
+      else if (e.key === 'Tab') {
+        const focusables = [lbClose, lbPrev, lbNext];
+        const idx = focusables.indexOf(document.activeElement);
+        e.preventDefault();
+        const dir = e.shiftKey ? -1 : 1;
+        focusables[(idx + dir + focusables.length) % focusables.length].focus();
       }
     });
   </script>
