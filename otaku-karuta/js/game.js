@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let allMemes    = [];
   let questions   = [];
+  let results     = []; // #14 各問の { elapsed, penalties } を記録
   let currentIndex = 0;
   let totalTime   = 0;
   let penaltyTime = 0;
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressCells      = document.getElementById('progress-cells');
   const progressLabel      = document.getElementById('progress-label');
   const resultTime         = document.getElementById('result-time');
+  const resultBreakdown    = document.getElementById('result-breakdown');
   const tweetBtn           = document.getElementById('tweet-btn');
   const retryBtn           = document.getElementById('retry-btn');
   const resultBackBtn      = document.getElementById('result-back-btn');
@@ -342,6 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Sound.play('start'); // #16 開始音（ドラムロール）
     const shuffled = shuffleArray([...allMemes]);
     questions    = shuffled.slice(0, 10);
+    results      = [];
     totalTime    = 0;
     penaltyTime  = 0;
     currentIndex = 0;
@@ -459,6 +462,12 @@ document.addEventListener('DOMContentLoaded', () => {
       isProcessing = true;
 
       const elapsed = Date.now() - startTime;
+      // #14 この問の結果と出題内容を記録（penaltyTime は問ごとにリセットされる）
+      results.push({
+        elapsed,
+        penalties: Math.round(penaltyTime / TIMING.penaltyMs),
+        meme: questions[currentIndex],
+      });
       totalTime  += elapsed + penaltyTime;
       penaltyTime = 0;
 
@@ -535,8 +544,90 @@ document.addEventListener('DOMContentLoaded', () => {
       bestLine.textContent = 'ベスト: ' + formatTime(best) + ' 秒';
     }
 
+    renderBreakdown(); // #14 問題ごとの正誤・タイム一覧
+
     showScreen(resultScreen);
     Sound.play(isRecord ? 'record' : 'complete'); // #16 完了音 / 新記録音
+  }
+
+  // ============================
+  // #14 問題ごとの結果一覧
+  // ============================
+  function renderBreakdown() {
+    resultBreakdown.innerHTML = '';
+    if (results.length === 0) return;
+
+    // 最速・最遅の問（解答時間 elapsed 基準）
+    let fastestIdx = 0;
+    let slowestIdx = 0;
+    results.forEach((r, i) => {
+      if (r.elapsed < results[fastestIdx].elapsed) fastestIdx = i;
+      if (r.elapsed > results[slowestIdx].elapsed) slowestIdx = i;
+    });
+    // 全問同タイム等で最速＝最遅になる場合はハイライトしない
+    const showExtremes = fastestIdx !== slowestIdx;
+
+    // ラベル付きの明細行を作る（上の句／下の句／元ネタ）
+    const detailLine = (key, value) => {
+      const line = document.createElement('div');
+      line.className = 'rb-line';
+      const k = document.createElement('span');
+      k.className = 'rb-key';
+      k.textContent = key;
+      const v = document.createElement('span');
+      v.className = 'rb-val';
+      v.textContent = value;
+      line.append(k, v);
+      return line;
+    };
+
+    results.forEach((r, i) => {
+      const hasWrong = r.penalties > 0;
+      const meme = r.meme || {};
+      const row = document.createElement('div');
+      row.className = 'rb-row ' + (hasWrong ? 'wrong' : 'correct');
+      if (showExtremes && i === fastestIdx) row.classList.add('fastest');
+      if (showExtremes && i === slowestIdx) row.classList.add('slowest');
+
+      // ヘッダー行: 第n問 / 正誤 / タイム / ペナルティ / 最速・最遅
+      const head = document.createElement('div');
+      head.className = 'rb-head';
+
+      const q = document.createElement('span');
+      q.className = 'rb-q';
+      q.textContent = '第' + (i + 1) + '問';
+
+      const mark = document.createElement('span');
+      mark.className = 'rb-mark';
+      mark.textContent = hasWrong ? '✗' : '✓';
+
+      const time = document.createElement('span');
+      time.className = 'rb-time';
+      time.textContent = formatTime(r.elapsed) + '秒';
+
+      const pen = document.createElement('span');
+      pen.className = 'rb-penalty';
+      pen.textContent = hasWrong ? '（+3秒ペナルティ×' + r.penalties + '）' : '';
+
+      const badge = document.createElement('span');
+      badge.className = 'rb-badge';
+      if (showExtremes && i === fastestIdx) badge.textContent = '最速';
+      else if (showExtremes && i === slowestIdx) badge.textContent = '最遅';
+
+      head.append(q, mark, time, pen, badge);
+
+      // 明細: その問の出題内容
+      const detail = document.createElement('div');
+      detail.className = 'rb-detail';
+      detail.append(
+        detailLine('上の句', meme.kami),
+        detailLine('下の句', meme.shimo),
+        detailLine('元ネタ', meme.source),
+      );
+
+      row.append(head, detail);
+      resultBreakdown.appendChild(row);
+    });
   }
 
   // ============================

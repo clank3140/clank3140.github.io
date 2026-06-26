@@ -1171,6 +1171,116 @@
       color: #8a7344;
     }
 
+    /* ===================================================
+       #14 結果画面の問題ごと一覧
+    =================================================== */
+    .result-breakdown {
+      width: 100%;
+      max-width: 440px;
+      max-height: 40vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 4px;
+      margin: 4px auto 0;
+      -webkit-overflow-scrolling: touch;
+    }
+    .rb-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: rgba(0, 10, 50, 0.6);
+      border-left: 3px solid #00ff88;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+    .rb-row.wrong {
+      border-left-color: #ff3b3b;
+    }
+    .rb-head {
+      display: grid;
+      grid-template-columns: auto auto auto 1fr auto;
+      align-items: center;
+      gap: 8px;
+    }
+    .rb-q {
+      font-weight: 700;
+      color: #b8a8e0;
+      white-space: nowrap;
+    }
+    .rb-mark {
+      font-weight: 900;
+      line-height: 1;
+    }
+    .rb-row.correct .rb-mark { color: #00ff88; text-shadow: 0 0 6px rgba(0, 255, 136, 0.5); }
+    .rb-row.wrong   .rb-mark { color: #ff3b3b; text-shadow: 0 0 6px rgba(255, 59, 59, 0.5); }
+    .rb-time {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: #e8d5ff;
+      white-space: nowrap;
+    }
+    .rb-penalty {
+      font-size: 0.72rem;
+      color: #ff7b7b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .rb-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      white-space: nowrap;
+      justify-self: end;
+    }
+    .rb-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .rb-line {
+      display: grid;
+      grid-template-columns: 3.4em 1fr;
+      gap: 8px;
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+    .rb-key {
+      color: #8877cc;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .rb-val {
+      color: #d8c8f5;
+      word-break: break-word;
+    }
+    .rb-row.fastest { box-shadow: 0 0 10px rgba(0, 229, 255, 0.28); }
+    .rb-row.slowest { box-shadow: 0 0 10px rgba(255, 170, 0, 0.22); }
+    .rb-row.fastest .rb-badge { color: #00e5ff; text-shadow: 0 0 6px rgba(0, 229, 255, 0.7); }
+    .rb-row.slowest .rb-badge { color: #ffaa00; text-shadow: 0 0 6px rgba(255, 170, 0, 0.7); }
+
+    /* #14 和風テーマ */
+    body[data-theme="wafuu"] #app .rb-row {
+      background: rgba(40, 26, 8, 0.7);
+      border-left-color: #2a7a4a;
+    }
+    body[data-theme="wafuu"] #app .rb-row.wrong { border-left-color: #cc3333; }
+    body[data-theme="wafuu"] #app .rb-q { color: #c4b080; }
+    body[data-theme="wafuu"] #app .rb-row.correct .rb-mark { color: #2a7a4a; text-shadow: none; }
+    body[data-theme="wafuu"] #app .rb-row.wrong   .rb-mark { color: #cc3333; text-shadow: none; }
+    body[data-theme="wafuu"] #app .rb-time { color: #f0e4c4; }
+    body[data-theme="wafuu"] #app .rb-penalty { color: #d4502a; }
+    body[data-theme="wafuu"] #app .rb-detail { border-top-color: rgba(155, 123, 42, 0.25); }
+    body[data-theme="wafuu"] #app .rb-key { color: #b09860; }
+    body[data-theme="wafuu"] #app .rb-val { color: #e4d4a8; }
+    body[data-theme="wafuu"] #app .rb-row.fastest .rb-badge { color: #6a9b6a; text-shadow: none; }
+    body[data-theme="wafuu"] #app .rb-row.slowest .rb-badge { color: #c4832a; text-shadow: none; }
+
     /* 狭い画面向けの調整 */
     @media (max-width: 480px) {
       .live-timer {
@@ -1193,6 +1303,14 @@
       }
       .rank-comment {
         font-size: 1rem;
+      }
+      .result-breakdown {
+        max-height: 28vh;
+      }
+      .rb-row {
+        gap: 6px;
+        padding: 7px 10px;
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -1287,6 +1405,9 @@
         <span id="result-time">0.00</span><span class="unit">秒</span>
       </p>
       <p class="best-line" id="best-line"></p>
+      <div class="result-breakdown" id="result-breakdown" aria-label="問題ごとの結果">
+        <!-- 各問の結果行を JS が生成 -->
+      </div>
       <div class="result-buttons">
         <button id="tweet-btn" class="btn btn-tweet">ツイートする</button>
         <button id="retry-btn" class="btn btn-secondary">もう一度遊ぶ</button>
