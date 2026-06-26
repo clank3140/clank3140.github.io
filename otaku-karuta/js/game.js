@@ -14,7 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let totalTime   = 0;
   let penaltyTime = 0;
   let startTime   = 0;
-  let kamiTimerId = null;
+  let kamiTimerId    = null;
+  let advanceTimerId = null; // 正解後、次の問題へ進むまでの遅延タイマー
+  let cutTimerId     = null; // 「第○問」カット → プレイ画面への遅延タイマー
+  let shakeTimerId   = null; // 誤答シェイク後に状態を戻すタイマー
+  let fadeTimerId    = null; // 画面フェードアウト遷移のタイマー
   let isProcessing = false;
   let rafId       = null;  // #11 ライブタイマー
   let lastRank    = null;  // #15 ツイート文言用に直近のランクを保持
@@ -254,8 +258,10 @@ document.addEventListener('DOMContentLoaded', () => {
   retryBtn.addEventListener('click', startGame);
   resultBackBtn.addEventListener('click', () => showScreen(titleScreen));
   backToTitleBtn.addEventListener('click', () => {
-    clearKamiTimer();
-    cancelLiveTimer();
+    // 自動進行中（正解後の遅延や「第○問」カット中）に戻ると、保留中の
+    // タイマーが後から発火して画面を上書きし進行不能になるため、ここで全て止める
+    clearGameTimers();
+    isProcessing = false;
     correctToast.classList.remove('active');
     showScreen(titleScreen);
   });
@@ -331,6 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ゲーム開始
   // ============================
   function startGame() {
+    clearGameTimers();
     Sound.unlock();      // ユーザー操作内で AudioContext を起動
     Sound.play('start'); // #16 開始音（ドラムロール）
     const shuffled = shuffleArray([...allMemes]);
@@ -356,7 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     showScreen(questionCut);
 
-    setTimeout(() => {
+    cutTimerId = setTimeout(() => {
+      cutTimerId = null;
       setupPlayScreen();
       showScreen(playScreen);
       startTime = Date.now();
@@ -421,6 +429,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // 進行を駆動している保留中タイマーを全て停止する（タイトルへ戻る／再スタート時）
+  function clearGameTimers() {
+    clearKamiTimer();
+    cancelLiveTimer();
+    if (advanceTimerId !== null) { clearTimeout(advanceTimerId); advanceTimerId = null; }
+    if (cutTimerId     !== null) { clearTimeout(cutTimerId);     cutTimerId     = null; }
+    if (shakeTimerId   !== null) { clearTimeout(shakeTimerId);   shakeTimerId   = null; }
+  }
+
   // ============================
   // 札タップ処理
   // ============================
@@ -461,7 +478,8 @@ document.addEventListener('DOMContentLoaded', () => {
       toastSource.textContent = '出典: ' + questions[currentIndex].source;
       correctToast.classList.add('active');
 
-      setTimeout(() => {
+      advanceTimerId = setTimeout(() => {
+        advanceTimerId = null;
         correctToast.classList.remove('active');
         currentIndex++;
         if (currentIndex >= 10) {
@@ -482,7 +500,8 @@ document.addEventListener('DOMContentLoaded', () => {
       tappedFuda.classList.add('shake');
 
       // animationend に頼らず setTimeout で確実に状態を戻す（固まり防止）
-      setTimeout(() => {
+      shakeTimerId = setTimeout(() => {
+        shakeTimerId = null;
         tappedFuda.classList.remove('shake');
         tappedFuda.classList.add('wrong');
         isProcessing = false;
@@ -533,11 +552,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // #24: フェードアウト付き画面遷移
   function showScreen(target) {
+    // 前の遷移が保留中なら破棄する。完了時は全画面の状態をクリアしてから
+    // target だけを active にするため、遷移が重なっても二重 active にならない
+    if (fadeTimerId !== null) {
+      clearTimeout(fadeTimerId);
+      fadeTimerId = null;
+    }
     const current = allScreens.find(s => s.classList.contains('active'));
     if (current && current !== target) {
       current.classList.add('fade-out');
-      setTimeout(() => {
-        current.classList.remove('active', 'fade-out');
+      fadeTimerId = setTimeout(() => {
+        fadeTimerId = null;
+        allScreens.forEach(el => el.classList.remove('active', 'fade-out'));
         target.classList.add('active');
       }, TIMING.screenTransition);
     } else {
