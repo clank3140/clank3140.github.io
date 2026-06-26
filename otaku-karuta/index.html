@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ミームかるた | ネットミームで遊ぶかるたゲーム</title>
+  <meta name="description" content="アニメ・漫画・ゲームのネットミームを題材にしたかるたゲーム。上の句を読んで、9枚の札から下の句を素早く取るタイムアタック形式。全10問に挑戦しよう！">
+  <meta property="og:title" content="ミームかるた">
+  <meta property="og:description" content="ネットミームの上の句を読んで、下の句の札を素早く取るタイムアタックかるたゲーム。">
+  <meta property="og:type" content="website">
+  <style>
+    /* ===== Reset & Base ===== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+        "Yu Gothic", "Noto Sans JP", "Meiryo", sans-serif;
+      background-color: #0d0021;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 28px 28px;
+      color: #e8d5ff;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ===== App Container ===== */
+    #app {
+      width: 100%;
+      max-width: 600px;
+      position: relative;
+      min-height: 100dvh;
+    }
+
+    /* ===== Screen Commons ===== */
+    .screen {
+      display: none;
+      width: 100%;
+      min-height: 100dvh;
+      padding: 24px 16px;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* ===== Animations ===== */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+      }
+    }
+
+    @keyframes fadeInOut {
+      0% {
+        opacity: 0;
+      }
+
+      15% {
+        opacity: 1;
+      }
+
+      75% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.7);
+      }
+
+      60% {
+        opacity: 1;
+        transform: scale(1.08);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes blink {
+
+      0%,
+      49% {
+        opacity: 1;
+      }
+
+      50%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes rainbowText {
+      0% {
+        color: #ff0080;
+        text-shadow: 0 0 8px #ff0080, 0 0 20px #ff0080;
+      }
+
+      17% {
+        color: #ff8c00;
+        text-shadow: 0 0 8px #ff8c00, 0 0 20px #ff8c00;
+      }
+
+      33% {
+        color: #ffff00;
+        text-shadow: 0 0 8px #ffff00, 0 0 20px #ffff00;
+      }
+
+      50% {
+        color: #00ff88;
+        text-shadow: 0 0 8px #00ff88, 0 0 20px #00ff88;
+      }
+
+      67% {
+        color: #00e5ff;
+        text-shadow: 0 0 8px #00e5ff, 0 0 20px #00e5ff;
+      }
+
+      83% {
+        color: #bf5fff;
+        text-shadow: 0 0 8px #bf5fff, 0 0 20px #bf5fff;
+      }
+
+      100% {
+        color: #ff0080;
+        text-shadow: 0 0 8px #ff0080, 0 0 20px #ff0080;
+      }
+    }
+
+    @keyframes marqueeScroll {
+      from {
+        transform: translateX(100vw);
+      }
+
+      to {
+        transform: translateX(-100%);
+      }
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* ===== Marquee Strip ===== */
+    .marquee-strip {
+      width: 100%;
+      overflow: hidden;
+      background: linear-gradient(90deg, #ff0080, #8000ff, #00e5ff, #00ff88, #ffff00, #ff8c00, #ff0080);
+      background-size: 300%;
+      animation: gradientShift 5s linear infinite;
+      padding: 5px 0;
+      font-size: 0.78rem;
+      font-weight: 900;
+      color: #000;
+      white-space: nowrap;
+      letter-spacing: 0.05em;
+      align-self: stretch;
+    }
+
+    .marquee-inner {
+      display: inline-block;
+      animation: marqueeScroll 18s linear infinite;
+    }
+
+    /* ===== 1. Title Screen ===== */
+    #title-screen {
+      justify-content: center;
+      gap: 20px;
+      text-align: center;
+      padding-top: 16px;
+    }
+
+    .title-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title-deco {
+      font-size: 1.6rem;
+      line-height: 1;
+      animation: rainbowText 2s linear infinite;
+    }
+
+    #title-screen h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      animation: rainbowText 3s linear infinite;
+    }
+
+    .tagline {
+      font-size: 0.88rem;
+      color: #ffff00;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 8px #ffff00;
+      animation: blink 1.4s step-start infinite;
+    }
+
+    /* How-to-play card — retro outset border */
+    .how-to-play {
+      background-color: rgba(10, 0, 40, 0.92);
+      border: 3px outset #ff69b4;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.5), inset 0 0 20px rgba(255, 105, 180, 0.05);
+      border-radius: 4px;
+      padding: 20px 24px;
+      width: 100%;
+      max-width: 400px;
+      text-align: left;
+    }
+
+    .how-to-play h2 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #00e5ff;
+      text-shadow: 0 0 10px #00e5ff;
+      letter-spacing: 0.2em;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .rules-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .rules-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: #d0c0ff;
+    }
+
+    .rule-step {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff0080, #8000ff);
+      box-shadow: 0 0 8px #ff0080;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .rule-note {
+      font-size: 0.82rem;
+      color: #9988bb;
+      text-align: center;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 105, 180, 0.3);
+    }
+
+    .rule-note strong {
+      color: #ff4444;
+      text-shadow: 0 0 8px #ff4444;
+    }
+
+    .disclaimer {
+      font-size: 0.72rem;
+      color: #6655aa;
+      text-align: center;
+      line-height: 1.6;
+      max-width: 340px;
+    }
+
+    /* ===== Buttons ===== */
+    .btn {
+      display: inline-block;
+      padding: 14px 48px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #ff0080 0%, #8000ff 100%);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 0 18px rgba(255, 0, 128, 0.7), 0 4px 6px rgba(0, 0, 0, 0.4);
+      font-family: inherit;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn:hover {
+      filter: brightness(1.25);
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(255, 0, 128, 0.9), 0 6px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 0 10px rgba(255, 0, 128, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #2a2050 0%, #4a3880 100%);
+      box-shadow: 0 0 10px rgba(100, 80, 200, 0.5), 0 4px 6px rgba(0, 0, 0, 0.3);
+      padding: 10px 32px;
+      font-size: 0.95rem;
+    }
+
+    .btn-secondary:hover {
+      box-shadow: 0 0 20px rgba(100, 80, 200, 0.7), 0 6px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-small {
+      background-color: transparent;
+      color: #ffffff;
+      padding: 8px 28px;
+      font-size: 0.8rem;
+      box-shadow: none;
+      text-shadow: none;
+      border: 1px solid #ffffff;
+      border-radius: 999px;
+    }
+
+    .btn-small:hover {
+      background-color: transparent;
+      color: #aa99ee;
+      border-color: #8877cc;
+      box-shadow: none;
+      transform: none;
+      filter: none;
+    }
+
+    .btn-small:active {
+      background-color: transparent;
+    }
+
+    .btn-tweet {
+      background: linear-gradient(135deg, #1da1f2 0%, #0055bb 100%);
+      box-shadow: 0 0 14px rgba(29, 161, 242, 0.6), 0 4px 6px rgba(0, 0, 0, 0.3);
+      padding: 12px 36px;
+      font-size: 1rem;
+    }
+
+    .btn-tweet:hover {
+      box-shadow: 0 0 24px rgba(29, 161, 242, 0.9), 0 6px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ===== 2. Question Cut ===== */
+    #question-cut {
+      justify-content: center;
+      align-items: center;
+    }
+
+    #question-cut .question-number {
+      font-size: 3rem;
+      font-weight: 900;
+      animation: popIn 0.5s ease, rainbowText 2s linear infinite;
+    }
+
+    /* ===== 3. Play Screen ===== */
+    #play-screen {
+      justify-content: flex-start;
+      gap: 20px;
+      padding-top: 16px;
+      padding-bottom: 16px;
+    }
+
+    /* Kami-no-ku display */
+    #kami-display {
+      width: 100%;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #00e5ff;
+      text-shadow: 0 0 12px #00e5ff;
+      text-align: center;
+      line-height: 1.5;
+      background-color: rgba(0, 10, 50, 0.85);
+      border-radius: 6px;
+      border: 2px solid #00e5ff;
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.35), inset 0 0 18px rgba(0, 229, 255, 0.05);
+    }
+
+    #kami-display .kami-text {
+      min-height: 1.5em;
+    }
+
+    /* Fuda grid — 3x3、縦は使える高さいっぱいまで札を伸ばす（スクロールは発生させない） */
+    #fuda-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      max-height: 560px;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+
+    /* Fuda card */
+    .fuda {
+      background-color: #1a003a;
+      border: 2px solid #7030c0;
+      border-radius: 6px;
+      padding: 12px 8px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 90px;
+      word-break: break-all;
+      user-select: none;
+      -webkit-user-select: none;
+      position: relative;
+      color: #ddd0ff;
+    }
+
+    .fuda:hover {
+      transform: translateY(-3px);
+      border-color: #ff69b4;
+      box-shadow: 0 0 14px rgba(255, 105, 180, 0.55), 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .fuda:active {
+      transform: translateY(0);
+      box-shadow: 0 0 6px rgba(255, 105, 180, 0.3);
+    }
+
+    /* Wrong fuda - persistent red border */
+    .fuda.wrong {
+      border: 2px solid #ff3333;
+      box-shadow: 0 0 10px rgba(255, 51, 51, 0.5);
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    /* Correct fuda - green highlight */
+    .fuda.correct {
+      border: 2px solid #00ff88;
+      background-color: rgba(0, 255, 136, 0.1);
+      box-shadow: 0 0 18px rgba(0, 255, 136, 0.5);
+      color: #00ff88;
+      text-shadow: 0 0 8px #00ff88;
+      pointer-events: none;
+    }
+
+    /* Taken fuda - hidden after correct */
+    .fuda.taken {
+      visibility: hidden;
+    }
+
+    /* Play screen header with progress and back button */
+    #play-screen .play-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #play-screen .play-header .progress-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #00e5ff;
+      text-shadow: 0 0 8px #00e5ff;
+    }
+
+    /* ===== 6. Result Screen ===== */
+    #result-screen {
+      justify-content: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    #result-screen h2 {
+      font-size: 2rem;
+      font-weight: 900;
+      animation: rainbowText 2s linear infinite;
+    }
+
+    #result-screen .total-time {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: #00e5ff;
+      text-shadow: 0 0 15px #00e5ff, 0 0 35px #00e5ff;
+      margin: 16px 0;
+    }
+
+    #result-screen .total-time .unit {
+      font-size: 1.5rem;
+      color: #8877cc;
+    }
+
+    #result-screen .result-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    @media (hover: none) {
+      .fuda:hover {
+        transform: none;
+        border-color: #7030c0;
+        box-shadow: none;
+      }
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 480px) {
+      #title-screen h1 {
+        font-size: 2.2rem;
+      }
+
+      .how-to-play {
+        padding: 16px;
+      }
+
+      .rules-list li {
+        font-size: 0.88rem;
+      }
+
+      #kami-display {
+        font-size: 1.5rem;
+        min-height: 70px;
+        padding: 12px;
+      }
+
+      #fuda-grid {
+        gap: 8px;
+      }
+
+      .fuda {
+        padding: 8px 6px;
+        font-size: 0.85rem;
+        min-height: 72px;
+      }
+
+      #question-cut .question-number {
+        font-size: 2.5rem;
+      }
+
+      #correct-overlay .overlay-text {
+        font-size: 2.8rem;
+      }
+
+      #penalty-overlay .overlay-text {
+        font-size: 2.5rem;
+      }
+
+      #result-screen .total-time {
+        font-size: 2.8rem;
+      }
+
+      .btn {
+        padding: 12px 40px;
+        font-size: 1.1rem;
+      }
+    }
+
+    /* ===================================================
+       以下: デザイン改修追加 CSS
+       Issue #8 #9 #10 #12 #19 #21 #22 #24 #25
+    =================================================== */
+
+    /* #8: 正解時 — 拡大しながらフェードアウト（斜め上へ） */
+    @keyframes flyAway {
+      0%   { transform: scale(1)    translate(0, 0)                       rotate(0deg);                   opacity: 1; }
+      25%  { transform: scale(1.15) translate(0, -10px)                   rotate(var(--fly-rot, -12deg)); opacity: 1; }
+      100% { transform: scale(1.7)  translate(var(--fly-x, 0px), -120px)  rotate(var(--fly-rot, -20deg)); opacity: 0; }
+    }
+    .fuda.fly-away {
+      animation: flyAway 0.6s ease-out forwards;
+      pointer-events: none;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* 正解トースト — 全画面を覆わず、札のアニメーションの上に小さく出す */
+    #correct-toast {
+      position: fixed;
+      top: 42%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 150;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+      text-align: center;
+      padding: 16px 32px;
+      border-radius: 12px;
+      background: rgba(0, 30, 18, 0.88);
+      border: 2px solid rgba(0, 255, 136, 0.6);
+      box-shadow: 0 0 24px rgba(0, 255, 136, 0.35);
+      max-width: 90vw;
+    }
+    #correct-toast.active {
+      display: flex;
+      animation: popIn 0.3s ease;
+    }
+    #correct-toast .toast-main {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #00ff88;
+      text-shadow: 0 0 14px #00ff88;
+      line-height: 1.2;
+    }
+    #correct-toast .toast-source {
+      font-size: 0.82rem;
+      color: #b8ffd9;
+      line-height: 1.4;
+      word-break: break-all;
+    }
+
+    /* #9: 不正解時 — シェイクアニメーション */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      15%       { transform: translateX(-10px); }
+      35%       { transform: translateX(10px); }
+      55%       { transform: translateX(-7px); }
+      75%       { transform: translateX(7px); }
+    }
+    .fuda.shake {
+      animation: shake 0.38s ease;
+    }
+
+    /* #10: 登場時 — フリップイン */
+    @keyframes flipIn {
+      from { transform: perspective(400px) rotateY(90deg) scale(0.85); opacity: 0; }
+      to   { transform: perspective(400px) rotateY(0deg)  scale(1);    opacity: 1; }
+    }
+    .fuda.flip-in {
+      animation: flipIn 0.32s ease both;
+    }
+
+    /* #12: プログレスバー */
+    .progress-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .progress-cells {
+      display: flex;
+      gap: 2px;
+    }
+    .progress-cells .p-cell {
+      width: 12px;
+      height: 8px;
+      border-radius: 2px;
+      background-color: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.22);
+      transition: background-color 0.25s, box-shadow 0.25s;
+    }
+    .progress-cells .p-cell.filled {
+      background-color: #00e5ff;
+      box-shadow: 0 0 6px rgba(0, 229, 255, 0.8);
+      animation: popIn 0.3s ease;
+    }
+    .progress-text {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(0, 229, 255, 0.55);
+    }
+
+    /* #24: 画面フェードアウト */
+    .screen {
+      transition: opacity 0.18s ease;
+    }
+    .screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* #19: 問題カット画面演出 */
+    @keyframes slashIn {
+      from { transform: scaleX(0); opacity: 0; }
+      to   { transform: scaleX(1); opacity: 1; }
+    }
+    @keyframes cutSlideR {
+      from { transform: translateX(60px); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
+    @keyframes cutSlideL {
+      from { transform: translateX(-60px); opacity: 0; }
+      to   { transform: translateX(0);     opacity: 1; }
+    }
+    .cut-inner {
+      text-align: center;
+    }
+    .cut-slash {
+      width: 200px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #ff0080, #00e5ff, transparent);
+      margin: 10px auto;
+      animation: slashIn 0.3s ease 0.05s both;
+    }
+    #question-cut .question-number {
+      animation: cutSlideR 0.35s ease both, rainbowText 2s linear infinite;
+    }
+    .cut-sub {
+      font-size: 0.85rem;
+      color: #8877cc;
+      letter-spacing: 0.1em;
+      animation: cutSlideL 0.35s ease 0.08s both;
+      min-height: 1.4em;
+    }
+
+    /* #21: タイトル背景カード */
+    #title-screen {
+      position: relative;
+      overflow: hidden;
+    }
+    @keyframes floatCard {
+      0%, 100% { transform: rotate(var(--rot)) translateY(0px); }
+      50%       { transform: rotate(var(--rot)) translateY(-16px); }
+    }
+    .title-bg-card {
+      position: absolute;
+      border-radius: 6px;
+      border: 1px solid rgba(112, 48, 192, 0.28);
+      background: rgba(112, 48, 192, 0.06);
+      pointer-events: none;
+      animation: floatCard var(--dur, 5s) ease-in-out infinite;
+    }
+    /* スタートボタンのパルス */
+    @keyframes btnPulse {
+      0%, 100% { box-shadow: 0 0 18px rgba(255,0,128,0.7),  0 4px 6px rgba(0,0,0,0.4); }
+      50%       { box-shadow: 0 0 36px rgba(255,0,128,0.95), 0 4px 14px rgba(0,0,0,0.4); }
+    }
+    #start-btn {
+      animation: btnPulse 2s ease-in-out infinite;
+    }
+
+    /* #22: テーマスイッチャー */
+    #theme-switcher {
+      position: fixed;
+      bottom: 12px;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      right: 12px;
+      display: flex;
+      gap: 4px;
+      z-index: 300;
+      background: rgba(0, 0, 20, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      padding: 5px 8px;
+    }
+    #theme-switcher button {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: rgba(255, 255, 255, 0.4);
+      border-radius: 999px;
+      width: 30px;
+      height: 30px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.18s;
+      line-height: 1;
+    }
+    #theme-switcher button:hover {
+      color: rgba(255, 255, 255, 0.8);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    #theme-switcher button.active {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+    }
+
+    /* ===== 和風テーマ ===== */
+    body[data-theme="wafuu"] {
+      background-color: #1a0e04;
+      background-image:
+        repeating-linear-gradient(0deg,  transparent, transparent 59px, rgba(155,123,42,0.07) 59px, rgba(155,123,42,0.07) 60px),
+        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(155,123,42,0.07) 59px, rgba(155,123,42,0.07) 60px);
+    }
+    body[data-theme="wafuu"] #app .fuda {
+      background-color: #f0e4c4;
+      border: 2px solid #9b7b2a;
+      color: #1a0900;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+      text-shadow: none;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.2), inset 0 0 10px rgba(155,123,42,0.07);
+    }
+    body[data-theme="wafuu"] #app .fuda:hover {
+      border-color: #c4832a;
+      box-shadow: 0 0 14px rgba(196,131,42,0.45), 2px 6px 12px rgba(0,0,0,0.25);
+      transform: translateY(-3px);
+    }
+    body[data-theme="wafuu"] #app .fuda.wrong {
+      border-color: #cc3333;
+      box-shadow: 0 0 10px rgba(204,51,51,0.35);
+    }
+    body[data-theme="wafuu"] #app .fuda.correct {
+      border-color: #2a7a4a;
+      background-color: rgba(42,122,74,0.12);
+      color: #1a4a2a;
+      text-shadow: none;
+      box-shadow: 0 0 18px rgba(42,122,74,0.35);
+    }
+    body[data-theme="wafuu"] #app #kami-display {
+      background-color: rgba(240, 218, 168, 0.95);
+      border-color: #9b7b2a;
+      color: #1a0900;
+      text-shadow: none;
+      box-shadow: 0 0 16px rgba(155,123,42,0.25), inset 0 0 16px rgba(155,123,42,0.04);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    }
+    body[data-theme="wafuu"] #app .progress-cells .p-cell {
+      border-color: rgba(155,123,42,0.3);
+      background-color: rgba(155,123,42,0.08);
+    }
+    body[data-theme="wafuu"] #app .progress-cells .p-cell.filled {
+      background-color: #9b7b2a;
+      box-shadow: 0 0 6px rgba(155,123,42,0.7);
+    }
+    body[data-theme="wafuu"] #app .progress-text {
+      color: rgba(155,123,42,0.75);
+    }
+    @media (hover: none) {
+      body[data-theme="wafuu"] #app .fuda:hover {
+        transform: none;
+        border-color: #9b7b2a;
+        box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+      }
+    }
+
+    /* #25: モバイル最適化 */
+    #kami-display {
+      font-size: clamp(1.15rem, 4.5vw, 1.8rem);
+    }
+    #play-screen {
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+    }
+    #title-screen,
+    #result-screen {
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+    @media (max-width: 480px) {
+      body[data-theme="wafuu"] #app .fuda {
+        min-height: 72px;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* ===== 和風テーマ — タイトル / 結果 / 共通パーツ ===== */
+    /* タイトル */
+    body[data-theme="wafuu"] #app #title-screen h1,
+    body[data-theme="wafuu"] #app .title-deco {
+      animation: none;
+      color: #f0e4c4;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    }
+    body[data-theme="wafuu"] #app .tagline {
+      color: #c4832a;
+      text-shadow: none;
+      animation: none;
+    }
+    body[data-theme="wafuu"] #app .title-bg-card {
+      border-color: rgba(155, 123, 42, 0.32);
+      background: rgba(155, 123, 42, 0.07);
+    }
+    /* how-to-play カード */
+    body[data-theme="wafuu"] #app .how-to-play {
+      background-color: rgba(40, 26, 8, 0.92);
+      border: 3px solid #9b7b2a;
+      box-shadow: 0 0 20px rgba(155, 123, 42, 0.35), inset 0 0 20px rgba(155, 123, 42, 0.05);
+    }
+    body[data-theme="wafuu"] #app .how-to-play h2 {
+      color: #f0e4c4;
+      text-shadow: none;
+    }
+    body[data-theme="wafuu"] #app .rules-list li {
+      color: #e4d4a8;
+    }
+    body[data-theme="wafuu"] #app .rule-step {
+      background: linear-gradient(135deg, #9b7b2a, #6a4a10);
+      box-shadow: 0 0 8px rgba(155, 123, 42, 0.6);
+    }
+    body[data-theme="wafuu"] #app .rule-note {
+      color: #b09860;
+      border-top-color: rgba(155, 123, 42, 0.3);
+    }
+    body[data-theme="wafuu"] #app .rule-note strong {
+      color: #d4502a;
+      text-shadow: none;
+    }
+    body[data-theme="wafuu"] #app .disclaimer {
+      color: #8a7344;
+    }
+    /* ボタン共通 */
+    body[data-theme="wafuu"] #app .btn {
+      background: linear-gradient(135deg, #c4832a 0%, #8a5a10 100%);
+      box-shadow: 0 0 18px rgba(196, 131, 42, 0.55), 0 4px 6px rgba(0, 0, 0, 0.4);
+    }
+    body[data-theme="wafuu"] #app #start-btn {
+      animation: none;
+    }
+    body[data-theme="wafuu"] #app .btn-secondary {
+      background: linear-gradient(135deg, #4a3818 0%, #6a4e20 100%);
+      box-shadow: 0 0 10px rgba(155, 123, 42, 0.4), 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    /* 結果画面 */
+    body[data-theme="wafuu"] #app #result-screen h2 {
+      animation: none;
+      color: #f0e4c4;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    }
+    body[data-theme="wafuu"] #app #result-screen .total-time {
+      color: #c4832a;
+      text-shadow: 0 0 15px rgba(196, 131, 42, 0.6);
+    }
+    body[data-theme="wafuu"] #app #result-screen .total-time .unit {
+      color: #8a7344;
+    }
+    /* 問題カット画面 */
+    body[data-theme="wafuu"] #app #question-cut .question-number {
+      animation: cutSlideR 0.35s ease both;
+      color: #f0e4c4;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    }
+    body[data-theme="wafuu"] #app .cut-slash {
+      background: linear-gradient(90deg, transparent, #c4832a, transparent);
+    }
+    body[data-theme="wafuu"] #app .cut-sub {
+      color: #8a7344;
+    }
+    /* 和風: 正解トースト */
+    body[data-theme="wafuu"] #correct-toast {
+      background: rgba(40, 26, 8, 0.92);
+      border-color: #9b7b2a;
+      box-shadow: 0 0 24px rgba(155, 123, 42, 0.4);
+    }
+    body[data-theme="wafuu"] #correct-toast .toast-main {
+      color: #f0e4c4;
+      text-shadow: 0 0 12px rgba(196, 131, 42, 0.8);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    }
+    body[data-theme="wafuu"] #correct-toast .toast-source {
+      color: #c4b080;
+    }
+
+    /* ===================================================
+       #11 ライブタイマー / #15 ランク評価 / #16 効果音ミュート
+    =================================================== */
+
+    /* #11: プレイヘッダーを 3カラム（進捗 / タイマー / 操作）に */
+    #play-screen .play-header {
+      gap: 8px;
+    }
+    .play-header-side {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1 1 0;
+      min-width: 0;
+    }
+    .play-header-side.right {
+      justify-content: flex-end;
+    }
+
+    /* #11: ライブタイマー */
+    .live-timer {
+      position: relative;
+      flex: 0 0 auto;
+      font-size: 1.5rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+      color: #ffff00;
+      text-shadow: 0 0 10px rgba(255, 255, 0, 0.7);
+      line-height: 1;
+      transition: color 0.12s ease, text-shadow 0.12s ease, transform 0.12s ease;
+    }
+    .live-timer.penalty-flash {
+      color: #ff3b3b;
+      text-shadow: 0 0 16px #ff3b3b, 0 0 28px #ff3b3b;
+      transform: scale(1.12);
+    }
+    .timer-value {
+      display: inline-block;
+    }
+    @keyframes penaltyPop {
+      0%   { opacity: 0; transform: translate(-50%, 0)     scale(0.8); }
+      20%  { opacity: 1; transform: translate(-50%, -10px) scale(1.1); }
+      100% { opacity: 0; transform: translate(-50%, -34px) scale(1); }
+    }
+    .penalty-pop {
+      position: absolute;
+      left: 50%;
+      top: -4px;
+      transform: translate(-50%, 0);
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #ff3b3b;
+      text-shadow: 0 0 10px #ff3b3b;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .penalty-pop.show {
+      animation: penaltyPop 0.7s ease-out;
+    }
+
+    /* #16: ミュートトグル */
+    .icon-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: rgba(255, 255, 255, 0.7);
+      border-radius: 999px;
+      width: 34px;
+      height: 34px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      flex-shrink: 0;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .icon-btn:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    .icon-btn.muted {
+      color: #ff6b6b;
+      border-color: rgba(255, 107, 107, 0.5);
+    }
+
+    /* プレイヘッダーの戻るボタンはコンパクトに */
+    #play-screen .play-header .btn-small {
+      padding: 7px 14px;
+      font-size: 0.72rem;
+    }
+
+    /* #15: ランク表示 */
+    .rank-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .rank-letter {
+      font-size: 5.5rem;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0.05em;
+      animation: rainbowText 1.6s linear infinite, popIn 0.5s ease;
+    }
+    .rank-comment {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffff00;
+      text-shadow: 0 0 10px rgba(255, 255, 0, 0.6);
+    }
+    .new-record {
+      display: none;
+      font-size: 1rem;
+      font-weight: 900;
+      color: #ff0080;
+      text-shadow: 0 0 12px #ff0080;
+      animation: blink 0.8s step-start infinite;
+    }
+    .new-record.show {
+      display: block;
+    }
+    .best-line {
+      font-size: 0.85rem;
+      color: #8877cc;
+    }
+
+    /* #15: 和風テーマのランク表示 */
+    body[data-theme="wafuu"] #app .rank-letter {
+      animation: popIn 0.5s ease;
+      color: #c4832a;
+      text-shadow: 0 0 16px rgba(196, 131, 42, 0.6);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    }
+    body[data-theme="wafuu"] #app .rank-comment {
+      color: #c4832a;
+      text-shadow: none;
+    }
+    body[data-theme="wafuu"] #app .new-record {
+      color: #d4502a;
+      text-shadow: none;
+    }
+    body[data-theme="wafuu"] #app .best-line {
+      color: #8a7344;
+    }
+
+    /* 狭い画面向けの調整 */
+    @media (max-width: 480px) {
+      .live-timer {
+        font-size: 1.25rem;
+      }
+      .progress-cells .p-cell {
+        width: 8px;
+      }
+      #play-screen .play-header .btn-small {
+        padding: 6px 10px;
+        font-size: 0.68rem;
+      }
+      .icon-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85rem;
+      }
+      .rank-letter {
+        font-size: 4.5rem;
+      }
+      .rank-comment {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+
+    <!-- 1. Title Screen -->
+    <section id="title-screen" class="screen active">
+      <header class="title-header">
+        <h1>ネットミームカルタ</h1>
+        <p class="tagline">優しく殺してね……</p>
+      </header>
+
+      <div class="how-to-play" aria-label="遊び方">
+        <h2>― あそびかた ―</h2>
+        <ol class="rules-list">
+          <li>
+            <span class="rule-step" aria-hidden="true">1</span>
+            <span>上の句が1文字ずつ流れる！</span>
+          </li>
+          <li>
+            <span class="rule-step" aria-hidden="true">2</span>
+            <span>9枚の札から下の句を探してタップ！</span>
+          </li>
+          <li>
+            <span class="rule-step" aria-hidden="true">3</span>
+            <span>全10問のタイムで勝負！</span>
+          </li>
+        </ol>
+        <p class="rule-note">誤答は <strong>+3秒</strong> のタイムペナルティ</p>
+      </div>
+
+      <button id="start-btn" class="btn">★ スタート ★</button>
+
+      <p class="disclaimer">このゲームはニコニコ大百科・ピクシブ百科事典・友人との会話を参照しているため、原作の表現とは一部異なる可能性が高いです。ご了承ください。</p>
+
+    </section>
+
+    <!-- 2. Question Cut -->
+    <section id="question-cut" class="screen">
+      <div class="cut-inner">
+        <div class="cut-slash"></div>
+        <p class="question-number" id="question-number-text">第1問</p>
+        <div class="cut-slash"></div>
+        <p class="cut-sub" id="cut-sub-text">準備はいい？</p>
+      </div>
+    </section>
+
+    <!-- 3. Play Screen -->
+    <section id="play-screen" class="screen">
+      <div class="play-header">
+        <div class="play-header-side left">
+          <div class="progress-bar-wrap">
+            <div class="progress-cells" id="progress-cells"></div>
+            <span id="progress-label" class="progress-text">1 / 10</span>
+          </div>
+        </div>
+        <div class="live-timer" id="live-timer">
+          <span class="timer-value" id="timer-value">00.00</span>
+          <span class="penalty-pop" id="penalty-pop">+3秒</span>
+        </div>
+        <div class="play-header-side right">
+          <button id="mute-btn" class="icon-btn" aria-label="効果音のオン／オフ" aria-pressed="false">🔊</button>
+          <button id="back-to-title-btn" class="btn-small">戻る</button>
+        </div>
+      </div>
+      <div id="kami-display">
+        <span class="kami-text" id="kami-text"></span>
+      </div>
+      <div id="fuda-grid">
+        <!-- 9 fuda cards generated by JS -->
+      </div>
+    </section>
+
+    <!-- 4. Correct Toast（全画面を覆わない正解表示） -->
+    <div id="correct-toast" aria-live="polite">
+      <p class="toast-main">正解！</p>
+      <p class="toast-source" id="toast-source"></p>
+    </div>
+
+    <!-- 6. Result Screen -->
+    <section id="result-screen" class="screen">
+      <h2>結果発表</h2>
+      <div class="rank-badge">
+        <span class="rank-letter" id="rank-letter">S</span>
+      </div>
+      <p class="rank-comment" id="rank-comment"></p>
+      <p class="new-record" id="new-record">🎉 新記録達成！ 🎉</p>
+      <p class="total-time">
+        <span id="result-time">0.00</span><span class="unit">秒</span>
+      </p>
+      <p class="best-line" id="best-line"></p>
+      <div class="result-buttons">
+        <button id="tweet-btn" class="btn btn-tweet">ツイートする</button>
+        <button id="retry-btn" class="btn btn-secondary">もう一度遊ぶ</button>
+        <button id="result-back-btn" class="btn-small">タイトルに戻る</button>
+      </div>
+    </section>
+
+    <!-- #22 テーマスイッチャー -->
+    <div id="theme-switcher" aria-label="テーマ切り替え">
+      <button data-theme="cyber" class="active" title="サイバー">⚡</button>
+      <button data-theme="wafuu" title="和風">和</button>
+    </div>
+
+  </div>
+
+  <script src="js/game.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,552 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const TIMING = {
+    questionCutDuration: 800,
+    kamiCharInterval:    200,
+    correctAdvanceDelay: 1200, // 札が消えるアニメ(0.6s)と正解トースト(source)を見せてから次の問題へ
+    shakeDuration:       400,  // シェイクアニメ(0.38s)が終わるまで（固まり防止）
+    penaltyMs:           3000,
+    screenTransition:    180,
+  };
+
+  let allMemes    = [];
+  let questions   = [];
+  let currentIndex = 0;
+  let totalTime   = 0;
+  let penaltyTime = 0;
+  let startTime   = 0;
+  let kamiTimerId = null;
+  let isProcessing = false;
+  let rafId       = null;  // #11 ライブタイマー
+  let lastRank    = null;  // #15 ツイート文言用に直近のランクを保持
+
+  const titleScreen    = document.getElementById('title-screen');
+  const questionCut    = document.getElementById('question-cut');
+  const playScreen     = document.getElementById('play-screen');
+  const resultScreen   = document.getElementById('result-screen');
+
+  const allScreens = [titleScreen, questionCut, playScreen, resultScreen];
+
+  const startBtn           = document.getElementById('start-btn');
+  const questionNumberText = document.getElementById('question-number-text');
+  const cutSubText         = document.getElementById('cut-sub-text');
+  const kamiText           = document.getElementById('kami-text');
+  const fudaGrid           = document.getElementById('fuda-grid');
+  const progressCells      = document.getElementById('progress-cells');
+  const progressLabel      = document.getElementById('progress-label');
+  const resultTime         = document.getElementById('result-time');
+  const tweetBtn           = document.getElementById('tweet-btn');
+  const retryBtn           = document.getElementById('retry-btn');
+  const resultBackBtn      = document.getElementById('result-back-btn');
+  const backToTitleBtn     = document.getElementById('back-to-title-btn');
+  const themeSwitcher      = document.getElementById('theme-switcher');
+  const correctToast       = document.getElementById('correct-toast');
+  const toastSource        = document.getElementById('toast-source');
+  const liveTimerEl        = document.getElementById('live-timer');
+  const timerValue         = document.getElementById('timer-value');
+  const penaltyPop         = document.getElementById('penalty-pop');
+  const muteBtn            = document.getElementById('mute-btn');
+  const rankLetter         = document.getElementById('rank-letter');
+  const rankComment        = document.getElementById('rank-comment');
+  const newRecordEl        = document.getElementById('new-record');
+  const bestLine           = document.getElementById('best-line');
+
+  const BEST_KEY = 'memekarta_best';
+
+  // ============================
+  // #16 効果音（Web Audio API でプログラム生成・外部ファイル不要）
+  // ============================
+  const Sound = (() => {
+    const MUTE_KEY = 'memekarta_muted';
+    let ctx = null;
+    let master = null;
+    let muted = localStorage.getItem(MUTE_KEY) === '1';
+
+    // AudioContext はユーザー操作内で初期化／再開する（自動再生ポリシー対策）
+    function ensure() {
+      if (!ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        ctx = new AC();
+        master = ctx.createGain();
+        master.gain.value = 0.5;
+        master.connect(ctx.destination);
+      }
+      if (ctx.state === 'suspended') ctx.resume();
+      return ctx;
+    }
+
+    // 単音（ゲインのアタック→ディケイ包絡線つき）
+    function note(freq, at, dur, type, peak) {
+      const t0 = ctx.currentTime + at;
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = type || 'triangle';
+      osc.frequency.setValueAtTime(freq, t0);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(peak || 0.3, t0 + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g).connect(master);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.02);
+    }
+
+    // 周波数を滑らかに動かす音（誤答のブー音などに使用）
+    function glide(from, to, at, dur, type, peak) {
+      const t0 = ctx.currentTime + at;
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = type || 'sawtooth';
+      osc.frequency.setValueAtTime(from, t0);
+      osc.frequency.linearRampToValueAtTime(to, t0 + dur);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(peak || 0.25, t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g).connect(master);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.02);
+    }
+
+    // ホワイトノイズによる短いドラムロール
+    function roll() {
+      const dur = 0.5;
+      const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 600;
+      const g = ctx.createGain();
+      const t0 = ctx.currentTime;
+      const beats = 9;
+      for (let i = 0; i < beats; i++) {
+        const tt = t0 + (i / beats) * dur;
+        const lvl = 0.06 + (i / beats) * 0.18; // だんだん盛り上がるロール
+        g.gain.setValueAtTime(lvl * 0.4, tt);
+        g.gain.linearRampToValueAtTime(lvl, tt + (dur / beats) * 0.5);
+      }
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      src.connect(filter).connect(g).connect(master);
+      src.start(t0);
+      src.stop(t0 + dur);
+      note(196, dur, 0.18, 'triangle', 0.35); // 最後の一打（G3）
+    }
+
+    const SFX = {
+      // 正解: 明るい上昇音（ピロリン）
+      correct() {
+        note(523.25, 0,    0.14, 'triangle', 0.30); // C5
+        note(659.25, 0.07, 0.14, 'triangle', 0.30); // E5
+        note(783.99, 0.14, 0.22, 'triangle', 0.32); // G5
+      },
+      // 誤答: 低いブー音
+      wrong() {
+        glide(160, 80, 0,    0.32, 'sawtooth', 0.22);
+        glide(150, 70, 0.02, 0.32, 'square',   0.12);
+      },
+      // ゲーム開始: ドラムロール
+      start() {
+        roll();
+      },
+      // 全問クリア: ファンファーレ
+      complete() {
+        note(523.25, 0,    0.16, 'triangle', 0.30); // C5
+        note(659.25, 0.13, 0.16, 'triangle', 0.30); // E5
+        note(783.99, 0.26, 0.16, 'triangle', 0.30); // G5
+        note(1046.5, 0.39, 0.50, 'triangle', 0.34); // C6
+      },
+      // 新記録: より派手なファンファーレ（トリル付き）
+      record() {
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => note(f, i * 0.1, 0.16, 'triangle', 0.30));
+        note(1046.5, 0.40, 0.10, 'square',   0.26);
+        note(1318.5, 0.50, 0.10, 'square',   0.26);
+        note(1046.5, 0.60, 0.10, 'square',   0.26);
+        note(1318.5, 0.70, 0.60, 'triangle', 0.34);
+      },
+    };
+
+    return {
+      play(name) {
+        if (muted) return;
+        if (!ensure()) return;
+        try { if (SFX[name]) SFX[name](); } catch (e) { /* オーディオエラーは無視 */ }
+      },
+      unlock() { ensure(); },
+      isMuted() { return muted; },
+      setMuted(m) {
+        muted = m;
+        localStorage.setItem(MUTE_KEY, m ? '1' : '0');
+      },
+    };
+  })();
+
+  function updateMuteBtn() {
+    const m = Sound.isMuted();
+    muteBtn.textContent = m ? '🔇' : '🔊';
+    muteBtn.classList.toggle('muted', m);
+    muteBtn.setAttribute('aria-pressed', String(m));
+  }
+  updateMuteBtn();
+  muteBtn.addEventListener('click', () => {
+    Sound.setMuted(!Sound.isMuted());
+    if (!Sound.isMuted()) Sound.unlock(); // ミュート解除時に AudioContext を準備
+    updateMuteBtn();
+  });
+
+  // ============================
+  // #15 ランク評価
+  // ============================
+  const RANKS = [
+    { rank: 'SS', maxSec: 30,       comment: 'ネ申' },
+    { rank: 'S',  maxSec: 40,       comment: 'インターネット老人' },
+    { rank: 'A',  maxSec: 50,       comment: 'ツイ廃' },
+    { rank: 'B',  maxSec: 60,       comment: '新参' },
+    { rank: 'C',  maxSec: 90,       comment: 'ニワカ' },
+    { rank: 'D',  maxSec: Infinity, comment: '社会適合者' },
+  ];
+  function getRank(ms) {
+    const sec = ms / 1000;
+    return RANKS.find(r => sec <= r.maxSec) || RANKS[RANKS.length - 1];
+  }
+  function getBest() {
+    const v = parseFloat(localStorage.getItem(BEST_KEY));
+    return Number.isFinite(v) ? v : null;
+  }
+
+  // ============================
+  // #11 ライブタイマー
+  // ============================
+  function renderTimer(ms) {
+    timerValue.textContent = formatTime(ms);
+  }
+  function startLiveTimer() {
+    cancelLiveTimer();
+    const tick = () => {
+      // 全問通しの累計タイム（経過 + ペナルティ）をリアルタイム表示
+      renderTimer(totalTime + penaltyTime + (Date.now() - startTime));
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+  }
+  function cancelLiveTimer() {
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
+  function flashPenalty() {
+    liveTimerEl.classList.remove('penalty-flash');
+    void liveTimerEl.offsetWidth; // アニメーションを確実に再発火
+    liveTimerEl.classList.add('penalty-flash');
+    setTimeout(() => liveTimerEl.classList.remove('penalty-flash'), 350);
+    penaltyPop.classList.remove('show');
+    void penaltyPop.offsetWidth;
+    penaltyPop.classList.add('show');
+  }
+
+  fetch('data/memes.json')
+    .then(res => res.json())
+    .then(data => { allMemes = data; })
+    .catch(err => { console.error('ミームデータの読み込みに失敗しました:', err); });
+
+  startBtn.addEventListener('click', startGame);
+  retryBtn.addEventListener('click', startGame);
+  resultBackBtn.addEventListener('click', () => showScreen(titleScreen));
+  backToTitleBtn.addEventListener('click', () => {
+    clearKamiTimer();
+    cancelLiveTimer();
+    correctToast.classList.remove('active');
+    showScreen(titleScreen);
+  });
+
+  tweetBtn.addEventListener('click', () => {
+    const formattedTime = formatTime(totalTime);
+    const rankPart = lastRank ? ' ランク' + lastRank.rank + '「' + lastRank.comment + '」' : '';
+    const tweetText = 'ミームかるたで10問を' + formattedTime + '秒でクリア！' + rankPart + ' #ミームかるた';
+    const url = 'https://x.com/intent/tweet'
+      + '?text=' + encodeURIComponent(tweetText)
+      + '&url=' + encodeURIComponent(window.location.href);
+    window.open(url, '_blank');
+  });
+
+  // ============================
+  // #22 テーマ切り替え
+  // ============================
+  function applyTheme(theme) {
+    document.body.dataset.theme = theme;
+    themeSwitcher.querySelectorAll('button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.theme === theme);
+    });
+  }
+
+  const savedTheme = localStorage.getItem('memekarta_theme') || 'cyber';
+  applyTheme(savedTheme);
+
+  themeSwitcher.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      applyTheme(btn.dataset.theme);
+      localStorage.setItem('memekarta_theme', btn.dataset.theme);
+    });
+  });
+
+  // ============================
+  // #21 タイトル背景カード
+  // ============================
+  (function initTitleBgCards() {
+    const specs = [
+      { w: 80,  h: 120, top: '8%',  side: 'left:4%',   rot: '-18deg', dur: '6s',   delay: '0s'   },
+      { w: 60,  h: 90,  top: '12%', side: 'right:5%',  rot: '14deg',  dur: '7s',   delay: '1.2s' },
+      { w: 70,  h: 105, top: '60%', side: 'left:2%',   rot: '-9deg',  dur: '5.5s', delay: '0.6s' },
+      { w: 55,  h: 82,  top: '68%', side: 'right:3%',  rot: '21deg',  dur: '8s',   delay: '2s'   },
+    ];
+    specs.forEach(c => {
+      const el = document.createElement('div');
+      el.className = 'title-bg-card';
+      el.style.cssText = `width:${c.w}px;height:${c.h}px;top:${c.top};${c.side};--rot:${c.rot};--dur:${c.dur};animation-delay:${c.delay};`;
+      titleScreen.appendChild(el);
+    });
+  })();
+
+  // ============================
+  // #12 プログレスバー
+  // ============================
+  function initProgressCells() {
+    progressCells.innerHTML = '';
+    for (let i = 0; i < 10; i++) {
+      const cell = document.createElement('span');
+      cell.className = 'p-cell';
+      progressCells.appendChild(cell);
+    }
+  }
+
+  function updateProgress(completedCount) {
+    progressCells.querySelectorAll('.p-cell').forEach((cell, i) => {
+      cell.classList.toggle('filled', i < completedCount);
+    });
+    progressLabel.textContent = (completedCount + 1) + ' / 10';
+  }
+
+  // ============================
+  // ゲーム開始
+  // ============================
+  function startGame() {
+    Sound.unlock();      // ユーザー操作内で AudioContext を起動
+    Sound.play('start'); // #16 開始音（ドラムロール）
+    const shuffled = shuffleArray([...allMemes]);
+    questions    = shuffled.slice(0, 10);
+    totalTime    = 0;
+    penaltyTime  = 0;
+    currentIndex = 0;
+    renderTimer(0);
+    initProgressCells();
+    showQuestion();
+  }
+
+  // ============================
+  // 問題表示
+  // ============================
+  function showQuestion() {
+    isProcessing = false;
+    questionNumberText.textContent = '第' + (currentIndex + 1) + '問';
+    if (cutSubText) {
+      cutSubText.textContent = currentIndex > 0
+        ? '累計 ' + formatTime(totalTime) + ' 秒'
+        : '準備はいい？';
+    }
+    showScreen(questionCut);
+
+    setTimeout(() => {
+      setupPlayScreen();
+      showScreen(playScreen);
+      startTime = Date.now();
+      animateKami();
+      startLiveTimer();
+    }, TIMING.questionCutDuration);
+  }
+
+  // ============================
+  // プレイ画面のセットアップ
+  // ============================
+  function setupPlayScreen() {
+    const correctMeme = questions[currentIndex];
+    const others   = allMemes.filter(m => m.id !== correctMeme.id);
+    const dummies  = shuffleArray([...others]).slice(0, 8);
+    const fudaList = shuffleArray([correctMeme, ...dummies]);
+
+    updateProgress(currentIndex);
+    kamiText.textContent = '';
+
+    fudaGrid.innerHTML = '';
+    fudaList.forEach((meme, index) => {
+      const div = document.createElement('div');
+      // #10: staggered flip-in per card
+      div.classList.add('fuda', 'flip-in');
+      div.style.animationDelay = (index * 40) + 'ms';
+      div.setAttribute('data-id', meme.id);
+      div.textContent = meme.shimo;
+      div.addEventListener('click', handleFudaTap);
+      // flip-in 完了後はクラスと delay を除去（fly-away / shake と競合させないため）
+      div.addEventListener('animationend', () => {
+        div.classList.remove('flip-in');
+        div.style.animationDelay = '';
+      }, { once: true });
+      fudaGrid.appendChild(div);
+    });
+  }
+
+  // ============================
+  // 上の句アニメーション
+  // ============================
+  function animateKami() {
+    const kami = questions[currentIndex].kami;
+    let charIndex = 0;
+    kamiText.textContent = '';
+
+    kamiTimerId = setInterval(() => {
+      if (charIndex < kami.length) {
+        kamiText.textContent += kami[charIndex];
+        charIndex++;
+      } else {
+        clearInterval(kamiTimerId);
+        kamiTimerId = null;
+      }
+    }, TIMING.kamiCharInterval);
+  }
+
+  function clearKamiTimer() {
+    if (kamiTimerId !== null) {
+      clearInterval(kamiTimerId);
+      kamiTimerId = null;
+    }
+  }
+
+  // ============================
+  // 札タップ処理
+  // ============================
+  function handleFudaTap(e) {
+    if (isProcessing) return;
+
+    const tappedFuda = e.currentTarget;
+    if (tappedFuda.classList.contains('wrong') || tappedFuda.classList.contains('fly-away')) return;
+
+    const tappedId  = Number(tappedFuda.getAttribute('data-id'));
+    const correctId = questions[currentIndex].id;
+
+    // flip-in が残っていると fly-away / shake より CSS ソース順で優先され、
+    // アニメーションが発火しない（= 進行が固まる）ため、ここで確実に除去する
+    tappedFuda.classList.remove('flip-in');
+    tappedFuda.style.animationDelay = '';
+
+    if (tappedId === correctId) {
+      isProcessing = true;
+
+      const elapsed = Date.now() - startTime;
+      totalTime  += elapsed + penaltyTime;
+      penaltyTime = 0;
+
+      clearKamiTimer();
+      cancelLiveTimer();
+      renderTimer(totalTime); // 確定した累計タイムで停止
+      Sound.play('correct');  // #16 正解音
+      kamiText.textContent = questions[currentIndex].kami;
+
+      // #8: 拡大フェードアウトアニメーション（ランダムな斜め方向）— 全画面オーバーレイは出さず、札が消えるのを見せる
+      const dir = Math.random() > 0.5 ? 1 : -1;
+      tappedFuda.style.setProperty('--fly-rot', (dir * (10 + Math.random() * 12)) + 'deg');
+      tappedFuda.style.setProperty('--fly-x',   (dir * (30 + Math.random() * 40)) + 'px');
+      tappedFuda.classList.add('fly-away');
+
+      // 正解トースト: 「正解！」+ 出典を表示
+      toastSource.textContent = '出典: ' + questions[currentIndex].source;
+      correctToast.classList.add('active');
+
+      setTimeout(() => {
+        correctToast.classList.remove('active');
+        currentIndex++;
+        if (currentIndex >= 10) {
+          showResult();
+        } else {
+          showQuestion();
+        }
+      }, TIMING.correctAdvanceDelay);
+
+    } else {
+      isProcessing = true;
+
+      penaltyTime += TIMING.penaltyMs;
+      flashPenalty();        // #11 タイマーを赤フラッシュ + 「+3秒」ポップ
+      Sound.play('wrong');   // #16 誤答音
+
+      // #9: シェイクアニメーション → wrong状態に移行（全画面オーバーレイは出さず、札の揺れを見せる）
+      tappedFuda.classList.add('shake');
+
+      // animationend に頼らず setTimeout で確実に状態を戻す（固まり防止）
+      setTimeout(() => {
+        tappedFuda.classList.remove('shake');
+        tappedFuda.classList.add('wrong');
+        isProcessing = false;
+      }, TIMING.shakeDuration);
+    }
+  }
+
+  // ============================
+  // 結果画面
+  // ============================
+  function showResult() {
+    cancelLiveTimer();
+    const finalMs = totalTime;
+    resultTime.textContent = formatTime(finalMs);
+
+    // #15 ランク・評価コメント
+    const r = getRank(finalMs);
+    lastRank = r;
+    rankLetter.textContent = r.rank;
+    rankComment.textContent = '「' + r.comment + '」';
+
+    // #15/#16 ベストタイム更新と新記録判定
+    const best = getBest();
+    const isRecord = best === null || finalMs < best;
+    if (isRecord) {
+      localStorage.setItem(BEST_KEY, String(finalMs));
+      newRecordEl.classList.add('show');
+      bestLine.textContent = 'ベスト: ' + formatTime(finalMs) + ' 秒';
+    } else {
+      newRecordEl.classList.remove('show');
+      bestLine.textContent = 'ベスト: ' + formatTime(best) + ' 秒';
+    }
+
+    showScreen(resultScreen);
+    Sound.play(isRecord ? 'record' : 'complete'); // #16 完了音 / 新記録音
+  }
+
+  // ============================
+  // ユーティリティ
+  // ============================
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // #24: フェードアウト付き画面遷移
+  function showScreen(target) {
+    const current = allScreens.find(s => s.classList.contains('active'));
+    if (current && current !== target) {
+      current.classList.add('fade-out');
+      setTimeout(() => {
+        current.classList.remove('active', 'fade-out');
+        target.classList.add('active');
+      }, TIMING.screenTransition);
+    } else {
+      allScreens.forEach(el => el.classList.remove('active', 'fade-out'));
+      target.classList.add('active');
+    }
+  }
+
+  function formatTime(ms) {
+    return (ms / 1000).toFixed(2);
+  }
+});
