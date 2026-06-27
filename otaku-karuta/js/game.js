@@ -216,13 +216,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // ============================
   // #15 ランク評価
   // ============================
+  // getRank() は maxSec 昇順に find するため、必ず小さい順に並べること
   const RANKS = [
-    { rank: 'SS', maxSec: 30,       comment: 'ネ申' },
-    { rank: 'S',  maxSec: 40,       comment: 'インターネット老人' },
-    { rank: 'A',  maxSec: 50,       comment: 'ツイ廃' },
-    { rank: 'B',  maxSec: 60,       comment: '新参' },
-    { rank: 'C',  maxSec: 90,       comment: 'ニワカ' },
-    { rank: 'D',  maxSec: Infinity, comment: '社会適合者' },
+    { rank: 'SSSS', maxSec: 15,       comment: 'パーフェクトコミュニケーション（よし、楽しく話せたな！）' },
+    { rank: 'SSS',  maxSec: 20,       comment: 'おそろしく速い回答　オレでなきゃ見逃しちゃうね' },
+    { rank: 'SS',   maxSec: 30,       comment: 'ネ申' },
+    { rank: 'S',    maxSec: 40,       comment: 'インターネット老人' },
+    { rank: 'A',    maxSec: 50,       comment: 'ツイ廃' },
+    { rank: 'B',    maxSec: 60,       comment: '新参' },
+    { rank: 'C',    maxSec: 90,       comment: 'ニワカ' },
+    { rank: 'D',    maxSec: Infinity, comment: '社会適合者' },
   ];
   function getRank(ms) {
     const sec = ms / 1000;
