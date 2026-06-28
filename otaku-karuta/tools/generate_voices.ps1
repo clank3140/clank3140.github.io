@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-  VOICEVOX を使って data/memes.json の上の句を一括で読み上げ音声(WAV)に変換する。
+  VOICEVOX を使って data/memes.js の上の句を一括で読み上げ音声(WAV)に変換する。
 
 .DESCRIPTION
   ハードモード（上の句を音声で出題）用の音声ファイルを生成する。
@@ -27,21 +27,24 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $Root     = Split-Path -Parent $PSScriptRoot   # → otaku-karuta/
-$DataPath = Join-Path $Root 'data/memes.json'
+$DataPath = Join-Path $Root 'data/memes.js'
 $OutDir   = Join-Path $Root 'assets/audio'
 
-if (-not (Test-Path $DataPath)) { throw "memes.json が見つかりません: $DataPath" }
+if (-not (Test-Path $DataPath)) { throw "memes.js が見つかりません: $DataPath" }
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
 # エンジンの疎通確認
 try { Invoke-RestMethod -Method Get -Uri "$Engine/version" -TimeoutSec 5 | Out-Null }
 catch { throw "VOICEVOX エンジンに接続できません ($Engine)。VOICEVOX を起動してから再実行してください。" }
 
-$memes = Get-Content -Raw -Encoding utf8 $DataPath | ConvertFrom-Json
+# memes.js は「window.KARUTA_MEMES = [...];」形式。JSON 部分だけ取り出して解析する
+$raw   = Get-Content -Raw -Encoding utf8 $DataPath
+$json  = $raw -replace '(?s)^\s*window\.KARUTA_MEMES\s*=\s*', '' -replace '(?s);\s*$', ''
+$memes = $json | ConvertFrom-Json
 $count = 0
 
 foreach ($m in $memes) {
-  # 読みが崩れる問だけ memes.json に "reading" を足せば、そちらを優先して読む（任意）
+  # 読みが崩れる問だけ memes.js に "reading" を足せば、そちらを優先して読む（任意）
   $text = if ($m.reading) { $m.reading } else { $m.kami }
   $enc  = [uri]::EscapeDataString($text)
   $out  = Join-Path $OutDir ("{0}.wav" -f $m.id)

@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const allScreens = [titleScreen, questionCut, playScreen, resultScreen];
 
-  const startBtn           = document.getElementById('start-btn');
+  const startNormalBtn     = document.getElementById('start-normal');
+  const startExtremeBtn    = document.getElementById('start-extreme');
   const questionNumberText = document.getElementById('question-number-text');
   const cutSubText         = document.getElementById('cut-sub-text');
   const kamiText           = document.getElementById('kami-text');
@@ -58,13 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const kamiDisplay        = document.getElementById('kami-display');
   const kamiAudio          = document.getElementById('kami-audio');
   const replayBtn          = document.getElementById('replay-btn');
-  const modeSwitcher       = document.getElementById('mode-switcher');
 
-  // #26 難易度モード（normal: 上の句を文字表示 / hard: 上の句を音声で出題）
-  const MODE_KEY  = 'memekarta_mode';
+  // #26 難易度モード（normal: 上の句を文字表示 / hard=EXTREME: 上の句を音声で出題）
+  // モードは開始時に NORMAL / EXTREME ボタンで選択する
   const AUDIO_DIR = 'assets/audio';
   const AUDIO_EXT = 'wav'; // 音声を MP3 化した場合は 'mp3' に変更
-  let   gameMode  = localStorage.getItem(MODE_KEY) === 'hard' ? 'hard' : 'normal';
+  let   gameMode  = 'normal';
 
   // ベストタイムはモード別に保存（ハードはノーマルと別記録として扱う）
   function bestKey() {
@@ -267,13 +267,17 @@ document.addEventListener('DOMContentLoaded', () => {
     penaltyPop.classList.add('show');
   }
 
-  fetch('data/memes.json')
-    .then(res => res.json())
-    .then(data => { allMemes = data; })
-    .catch(err => { console.error('ミームデータの読み込みに失敗しました:', err); });
+  // データは index.html の <script src="data/memes.js"> で window.KARUTA_MEMES に読み込まれる
+  // （fetch を使わないので file:// で直接開いても動作する）
+  allMemes = Array.isArray(window.KARUTA_MEMES) ? window.KARUTA_MEMES : [];
+  if (allMemes.length === 0) {
+    console.error('ミームデータが読み込めませんでした（data/memes.js を確認してください）');
+  }
 
-  startBtn.addEventListener('click', startGame);
-  retryBtn.addEventListener('click', startGame);
+  // 開始ボタン: NORMAL=文字表示 / EXTREME=音声出題
+  startNormalBtn.addEventListener('click',  () => { gameMode = 'normal'; startGame(); });
+  startExtremeBtn.addEventListener('click', () => { gameMode = 'hard';   startGame(); });
+  retryBtn.addEventListener('click', startGame); // 直前のモードのまま再挑戦
   resultBackBtn.addEventListener('click', () => showScreen(titleScreen));
   backToTitleBtn.addEventListener('click', () => {
     // 自動進行中（正解後の遅延や「第○問」カット中）に戻ると、保留中の
@@ -287,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
   tweetBtn.addEventListener('click', () => {
     const formattedTime = formatTime(totalTime);
     const rankPart = lastRank ? ' ランク' + lastRank.rank + '「' + lastRank.comment + '」' : '';
-    const modePart = gameMode === 'hard' ? '【ハード🔊】' : '';
+    const modePart = gameMode === 'hard' ? '【EXTREME🔊】' : '';
     const tweetText = modePart + 'ミームかるたで10問を' + formattedTime + '秒でクリア！' + rankPart + ' #ミームかるた';
     const url = 'https://x.com/intent/tweet'
       + '?text=' + encodeURIComponent(tweetText)
@@ -315,25 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ============================
-  // #26 難易度モード切り替え
-  // ============================
-  function applyMode(mode) {
-    gameMode = (mode === 'hard') ? 'hard' : 'normal';
-    document.body.dataset.mode = gameMode;
-    modeSwitcher.querySelectorAll('button').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.mode === gameMode);
-    });
-  }
-  applyMode(gameMode);
-  modeSwitcher.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      applyMode(btn.dataset.mode);
-      localStorage.setItem(MODE_KEY, gameMode);
-    });
-  });
-
-  // 上の句の読み上げ音声を再生（ハードモード）。効果音ミュートとは独立して鳴らす
+  // 上の句の読み上げ音声を再生（EXTREMEモード）。効果音ミュートとは独立して鳴らす
   function playKamiAudio() {
     if (!kamiAudio) return;
     kamiAudio.src = AUDIO_DIR + '/' + questions[currentIndex].id + '.' + AUDIO_EXT;

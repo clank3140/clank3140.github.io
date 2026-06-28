@@ -2,7 +2,7 @@
 
 このディレクトリには、ハードモードで上の句を読み上げる音声ファイルを置きます。
 
-- ファイル名: `{id}.wav`（`data/memes.json` の `id` に対応。例: `1.wav`, `2.wav` …）
+- ファイル名: `{id}.wav`（`data/memes.js` の `id` に対応。例: `1.wav`, `2.wav` …）
 - 生成方法: VOICEVOX を起動した状態で `../tools/generate_voices.ps1` を実行
   （詳細はスクリプト冒頭のコメント参照）
 

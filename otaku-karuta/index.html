@@ -450,43 +450,30 @@
       min-height: 1.5em;
     }
 
-    /* ===== 難易度セレクト / ハードモード（音声出題） ===== */
-    .mode-select {
+    /* ===== 開始ボタン（NORMAL / EXTREME）===== */
+    .start-buttons {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
-    .mode-label {
-      font-size: 0.78rem;
-      letter-spacing: 0.15em;
+    .start-buttons .btn {
+      padding: 14px 34px;
+    }
+    /* EXTREME はシアン〜紫のグラデで音声モードらしさを出す */
+    .btn-extreme {
+      background: linear-gradient(135deg, #00e5ff 0%, #8000ff 100%);
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.7), 0 4px 6px rgba(0, 0, 0, 0.4);
+    }
+    .btn-extreme:hover {
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.9), 0 6px 10px rgba(0, 0, 0, 0.4);
+    }
+    .mode-note {
+      font-size: 0.8rem;
       color: #aa99ee;
-    }
-    #mode-switcher {
-      display: flex;
-      gap: 6px;
-    }
-    #mode-switcher button {
-      background: transparent;
-      border: 1px solid rgba(0, 229, 255, 0.4);
-      color: rgba(0, 229, 255, 0.65);
-      border-radius: 999px;
-      padding: 8px 22px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.18s;
-    }
-    #mode-switcher button:hover {
-      color: #00e5ff;
-      border-color: #00e5ff;
-    }
-    #mode-switcher button.active {
-      background: rgba(0, 229, 255, 0.18);
-      color: #fff;
-      border-color: #00e5ff;
-      box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+      text-align: center;
+      line-height: 1.6;
+      max-width: 340px;
     }
 
     /* 音声出題時のみ、上の句テキストを隠してヒントと再生ボタンを表示する */
@@ -1412,18 +1399,13 @@
           </li>
         </ol>
         <p class="rule-note">誤答は <strong>+3秒</strong> のタイムペナルティ</p>
-        <p class="rule-note">ハード🔊 は上の句が <strong>音声</strong> で出題！</p>
       </div>
 
-      <div class="mode-select" aria-label="難易度">
-        <span class="mode-label">― なんいど ―</span>
-        <div id="mode-switcher">
-          <button type="button" data-mode="normal" class="active">ノーマル</button>
-          <button type="button" data-mode="hard">ハード🔊</button>
-        </div>
+      <div class="start-buttons" aria-label="難易度を選んで開始">
+        <button id="start-normal" class="btn">NORMAL</button>
+        <button id="start-extreme" class="btn btn-extreme">EXTREME</button>
       </div>
-
-      <button id="start-btn" class="btn">★ スタート ★</button>
+      <p class="mode-note">EXTREMEは音声で上の句を読み上げられるコミュニケーション実践モードです</p>
 
       <p class="disclaimer">このゲームはニコニコ大百科・ピクシブ百科事典・友人との会話を参照しているため、原作の表現とは一部異なる可能性が高いです。ご了承ください。</p>
       <p class="disclaimer">読み上げ音声: VOICEVOX:ずんだもん</p>
@@ -1505,6 +1487,8 @@
 
   </div>
 
+  <!-- データは <script> で読み込む（file:// でも fetch 制限を受けずに動く） -->
+  <script src="data/memes.js"></script>
   <script src="js/game.js"></script>
 </body>
 
