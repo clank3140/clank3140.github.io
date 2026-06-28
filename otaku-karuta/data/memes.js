@@ -256,7 +256,7 @@ window.KARUTA_MEMES = [
     "kami": "何でもは知らないわよ",
     "shimo": "知ってることだけ",
     "source": "化物語",
-    "reading": "なんでもはしらないわよ"
+    "reading": "なんでもわしらないわよ"
   },
   {
     "id": 44,

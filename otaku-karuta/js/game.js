@@ -290,9 +290,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   tweetBtn.addEventListener('click', () => {
     const formattedTime = formatTime(totalTime);
-    const modeName = gameMode === 'hard' ? 'EXTREME🔊' : 'NORMAL';
+    const modeName = gameMode === 'hard' ? 'EXTREME' : 'NORMAL';
     const rankPart = lastRank ? ' ランク' + lastRank.rank + '「' + lastRank.comment + '」' : '';
-    const tweetText = '【' + modeName + '】ミームかるたで10問を' + formattedTime + '秒でクリア！' + rankPart + ' #ミームかるた';
+    const tweetText = '【' + modeName + 'モード】\nミームかるたで10問を' + formattedTime + '秒でクリア！\n' + rankPart + '\n#ミームかるた';
     const url = 'https://x.com/intent/tweet'
       + '?text=' + encodeURIComponent(tweetText)
       + '&url=' + encodeURIComponent(window.location.href);
