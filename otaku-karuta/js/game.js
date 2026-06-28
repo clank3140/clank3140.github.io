@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const allScreens = [titleScreen, questionCut, playScreen, resultScreen];
 
-  const startBtn           = document.getElementById('start-btn');
+  const startNormalBtn     = document.getElementById('start-normal');
+  const startExtremeBtn    = document.getElementById('start-extreme');
   const questionNumberText = document.getElementById('question-number-text');
   const cutSubText         = document.getElementById('cut-sub-text');
   const kamiText           = document.getElementById('kami-text');
@@ -55,8 +56,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const rankComment        = document.getElementById('rank-comment');
   const newRecordEl        = document.getElementById('new-record');
   const bestLine           = document.getElementById('best-line');
+  const kamiDisplay        = document.getElementById('kami-display');
+  const kamiAudio          = document.getElementById('kami-audio');
+  const replayBtn          = document.getElementById('replay-btn');
 
-  const BEST_KEY = 'memekarta_best';
+  // #26 難易度モード（normal: 上の句を文字表示 / hard=EXTREME: 上の句を音声で出題）
+  // モードは開始時に NORMAL / EXTREME ボタンで選択する
+  const AUDIO_DIR = 'assets/audio';
+  const AUDIO_EXT = 'wav'; // 音声を MP3 化した場合は 'mp3' に変更
+  let   gameMode  = 'normal';
+
+  // ベストタイムはモード別に保存（ハードはノーマルと別記録として扱う）
+  function bestKey() {
+    return gameMode === 'hard' ? 'memekarta_best_hard' : 'memekarta_best';
+  }
 
   // ============================
   // #16 効果音（Web Audio API でプログラム生成・外部ファイル不要）
@@ -203,20 +216,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // ============================
   // #15 ランク評価
   // ============================
+  // getRank() は maxSec 昇順に find するため、必ず小さい順に並べること
   const RANKS = [
-    { rank: 'SS', maxSec: 30,       comment: 'ネ申' },
-    { rank: 'S',  maxSec: 40,       comment: 'インターネット老人' },
-    { rank: 'A',  maxSec: 50,       comment: 'ツイ廃' },
-    { rank: 'B',  maxSec: 60,       comment: '新参' },
-    { rank: 'C',  maxSec: 90,       comment: 'ニワカ' },
-    { rank: 'D',  maxSec: Infinity, comment: '社会適合者' },
+    { rank: 'SSSS', maxSec: 15,       comment: 'パーフェクトコミュニケーション（よし、楽しく話せたな！）' },
+    { rank: 'SSS',  maxSec: 20,       comment: 'おそろしく速い回答　オレでなきゃ見逃しちゃうね' },
+    { rank: 'SS',   maxSec: 30,       comment: 'ネ申' },
+    { rank: 'S',    maxSec: 40,       comment: 'インターネット老人' },
+    { rank: 'A',    maxSec: 50,       comment: 'ツイ廃' },
+    { rank: 'B',    maxSec: 60,       comment: '新参' },
+    { rank: 'C',    maxSec: 90,       comment: 'ニワカ' },
+    { rank: 'D',    maxSec: Infinity, comment: '社会適合者' },
   ];
   function getRank(ms) {
     const sec = ms / 1000;
     return RANKS.find(r => sec <= r.maxSec) || RANKS[RANKS.length - 1];
   }
   function getBest() {
-    const v = parseFloat(localStorage.getItem(BEST_KEY));
+    const v = parseFloat(localStorage.getItem(bestKey()));
     return Number.isFinite(v) ? v : null;
   }
 
@@ -251,13 +267,17 @@ document.addEventListener('DOMContentLoaded', () => {
     penaltyPop.classList.add('show');
   }
 
-  fetch('data/memes.json')
-    .then(res => res.json())
-    .then(data => { allMemes = data; })
-    .catch(err => { console.error('ミームデータの読み込みに失敗しました:', err); });
+  // データは index.html の <script src="data/memes.js"> で window.KARUTA_MEMES に読み込まれる
+  // （fetch を使わないので file:// で直接開いても動作する）
+  allMemes = Array.isArray(window.KARUTA_MEMES) ? window.KARUTA_MEMES : [];
+  if (allMemes.length === 0) {
+    console.error('ミームデータが読み込めませんでした（data/memes.js を確認してください）');
+  }
 
-  startBtn.addEventListener('click', startGame);
-  retryBtn.addEventListener('click', startGame);
+  // 開始ボタン: NORMAL=文字表示 / EXTREME=音声出題
+  startNormalBtn.addEventListener('click',  () => { gameMode = 'normal'; startGame(); });
+  startExtremeBtn.addEventListener('click', () => { gameMode = 'hard';   startGame(); });
+  retryBtn.addEventListener('click', startGame); // 直前のモードのまま再挑戦
   resultBackBtn.addEventListener('click', () => showScreen(titleScreen));
   backToTitleBtn.addEventListener('click', () => {
     // 自動進行中（正解後の遅延や「第○問」カット中）に戻ると、保留中の
@@ -270,8 +290,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   tweetBtn.addEventListener('click', () => {
     const formattedTime = formatTime(totalTime);
+    const modeName = gameMode === 'hard' ? 'EXTREME' : 'NORMAL';
     const rankPart = lastRank ? ' ランク' + lastRank.rank + '「' + lastRank.comment + '」' : '';
-    const tweetText = 'ミームかるたで10問を' + formattedTime + '秒でクリア！' + rankPart + ' #ミームかるた';
+    const tweetText = '【' + modeName + 'モード】\nミームかるたで10問を' + formattedTime + '秒でクリア！\n' + rankPart + '\n#ミームかるた';
     const url = 'https://x.com/intent/tweet'
       + '?text=' + encodeURIComponent(tweetText)
       + '&url=' + encodeURIComponent(window.location.href);
@@ -297,6 +318,26 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('memekarta_theme', btn.dataset.theme);
     });
   });
+
+  // 上の句の読み上げ音声を再生（EXTREMEモード）。効果音ミュートとは独立して鳴らす
+  function playKamiAudio() {
+    if (!kamiAudio) return;
+    kamiAudio.src = AUDIO_DIR + '/' + questions[currentIndex].id + '.' + AUDIO_EXT;
+    kamiAudio.currentTime = 0;
+    const p = kamiAudio.play();
+    if (p && p.catch) p.catch(() => { /* 自動再生がブロックされたらリプレイボタンで再生 */ });
+  }
+  // 音声ファイルが無い／読み込めない場合は上の句テキストを表示して回答可能にする
+  if (kamiAudio) {
+    kamiAudio.addEventListener('error', () => {
+      if (gameMode !== 'hard') return;
+      kamiDisplay.classList.remove('audio-mode');
+      kamiText.textContent = questions[currentIndex] ? questions[currentIndex].kami : '';
+    });
+  }
+  if (replayBtn) {
+    replayBtn.addEventListener('click', () => { Sound.unlock(); playKamiAudio(); });
+  }
 
   // ============================
   // #21 タイトル背景カード
@@ -411,9 +452,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // ============================
   function animateKami() {
     const kami = questions[currentIndex].kami;
-    let charIndex = 0;
     kamiText.textContent = '';
 
+    // ハードモード: 上の句テキストは隠し、音声で出題する
+    if (gameMode === 'hard') {
+      kamiDisplay.classList.add('audio-mode');
+      playKamiAudio();
+      return;
+    }
+    kamiDisplay.classList.remove('audio-mode');
+
+    let charIndex = 0;
     kamiTimerId = setInterval(() => {
       if (charIndex < kami.length) {
         kamiText.textContent += kami[charIndex];
@@ -436,6 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function clearGameTimers() {
     clearKamiTimer();
     cancelLiveTimer();
+    if (kamiAudio) kamiAudio.pause();
     if (advanceTimerId !== null) { clearTimeout(advanceTimerId); advanceTimerId = null; }
     if (cutTimerId     !== null) { clearTimeout(cutTimerId);     cutTimerId     = null; }
     if (shakeTimerId   !== null) { clearTimeout(shakeTimerId);   shakeTimerId   = null; }
@@ -475,6 +525,11 @@ document.addEventListener('DOMContentLoaded', () => {
       cancelLiveTimer();
       renderTimer(totalTime); // 確定した累計タイムで停止
       Sound.play('correct');  // #16 正解音
+      // ハードモードでは正解時に上の句テキストを開示し、読み上げを止める
+      if (gameMode === 'hard') {
+        kamiDisplay.classList.remove('audio-mode');
+        if (kamiAudio) kamiAudio.pause();
+      }
       kamiText.textContent = questions[currentIndex].kami;
 
       // #8: 拡大フェードアウトアニメーション（ランダムな斜め方向）— 全画面オーバーレイは出さず、札が消えるのを見せる
@@ -536,7 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const best = getBest();
     const isRecord = best === null || finalMs < best;
     if (isRecord) {
-      localStorage.setItem(BEST_KEY, String(finalMs));
+      localStorage.setItem(bestKey(), String(finalMs));
       newRecordEl.classList.add('show');
       bestLine.textContent = 'ベスト: ' + formatTime(finalMs) + ' 秒';
     } else {

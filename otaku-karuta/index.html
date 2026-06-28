@@ -332,6 +332,23 @@
       max-width: 340px;
     }
 
+    /* サイトクレジット（タイトル／結果画面のみに配置） */
+    .site-credit {
+      font-size: 0.72rem;
+      color: #6655aa;
+      text-align: center;
+      margin-top: 4px;
+    }
+    .site-credit a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.18s;
+    }
+    .site-credit a:hover {
+      color: #aa99ee;
+      text-decoration: underline;
+    }
+
     /* ===== Buttons ===== */
     .btn {
       display: inline-block;
@@ -448,6 +465,62 @@
 
     #kami-display .kami-text {
       min-height: 1.5em;
+    }
+
+    /* ===== 開始ボタン（NORMAL / EXTREME）===== */
+    .start-buttons {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .start-buttons .btn {
+      padding: 14px 34px;
+    }
+
+    /* EXTREME はシアン〜紫のグラデで音声モードらしさを出す */
+    .btn-extreme {
+      background: linear-gradient(135deg, #00e5ff 0%, #8000ff 100%);
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.7), 0 4px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-extreme:hover {
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.9), 0 6px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .mode-note {
+      font-size: 0.8rem;
+      color: #aa99ee;
+      text-align: center;
+      line-height: 1.6;
+      max-width: 340px;
+    }
+
+    /* 音声出題時のみ、上の句テキストを隠してヒントと再生ボタンを表示する */
+    #kami-display {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #kami-display .kami-audio-hint,
+    #kami-display #replay-btn {
+      display: none;
+    }
+
+    #kami-display.audio-mode .kami-text {
+      display: none;
+    }
+
+    #kami-display.audio-mode .kami-audio-hint {
+      display: block;
+      margin: 0;
+      font-size: clamp(1rem, 3.8vw, 1.3rem);
+      line-height: 1.5;
+    }
+
+    #kami-display.audio-mode #replay-btn {
+      display: inline-block;
     }
 
     /* Fuda grid — 3x3、縦は使える高さいっぱいまで札を伸ばす（スクロールは発生させない） */
@@ -636,10 +709,22 @@
 
     /* #8: 正解時 — 拡大しながらフェードアウト（斜め上へ） */
     @keyframes flyAway {
-      0%   { transform: scale(1)    translate(0, 0)                       rotate(0deg);                   opacity: 1; }
-      25%  { transform: scale(1.15) translate(0, -10px)                   rotate(var(--fly-rot, -12deg)); opacity: 1; }
-      100% { transform: scale(1.7)  translate(var(--fly-x, 0px), -120px)  rotate(var(--fly-rot, -20deg)); opacity: 0; }
+      0% {
+        transform: scale(1) translate(0, 0) rotate(0deg);
+        opacity: 1;
+      }
+
+      25% {
+        transform: scale(1.15) translate(0, -10px) rotate(var(--fly-rot, -12deg));
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1.7) translate(var(--fly-x, 0px), -120px) rotate(var(--fly-rot, -20deg));
+        opacity: 0;
+      }
     }
+
     .fuda.fly-away {
       animation: flyAway 0.6s ease-out forwards;
       pointer-events: none;
@@ -667,10 +752,12 @@
       box-shadow: 0 0 24px rgba(0, 255, 136, 0.35);
       max-width: 90vw;
     }
+
     #correct-toast.active {
       display: flex;
       animation: popIn 0.3s ease;
     }
+
     #correct-toast .toast-main {
       font-size: 2rem;
       font-weight: 900;
@@ -678,6 +765,7 @@
       text-shadow: 0 0 14px #00ff88;
       line-height: 1.2;
     }
+
     #correct-toast .toast-source {
       font-size: 0.82rem;
       color: #b8ffd9;
@@ -687,21 +775,46 @@
 
     /* #9: 不正解時 — シェイクアニメーション */
     @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      15%       { transform: translateX(-10px); }
-      35%       { transform: translateX(10px); }
-      55%       { transform: translateX(-7px); }
-      75%       { transform: translateX(7px); }
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      15% {
+        transform: translateX(-10px);
+      }
+
+      35% {
+        transform: translateX(10px);
+      }
+
+      55% {
+        transform: translateX(-7px);
+      }
+
+      75% {
+        transform: translateX(7px);
+      }
     }
+
     .fuda.shake {
       animation: shake 0.38s ease;
     }
 
     /* #10: 登場時 — フリップイン */
     @keyframes flipIn {
-      from { transform: perspective(400px) rotateY(90deg) scale(0.85); opacity: 0; }
-      to   { transform: perspective(400px) rotateY(0deg)  scale(1);    opacity: 1; }
+      from {
+        transform: perspective(400px) rotateY(90deg) scale(0.85);
+        opacity: 0;
+      }
+
+      to {
+        transform: perspective(400px) rotateY(0deg) scale(1);
+        opacity: 1;
+      }
     }
+
     .fuda.flip-in {
       animation: flipIn 0.32s ease both;
     }
@@ -712,10 +825,12 @@
       align-items: center;
       gap: 8px;
     }
+
     .progress-cells {
       display: flex;
       gap: 2px;
     }
+
     .progress-cells .p-cell {
       width: 12px;
       height: 8px;
@@ -724,11 +839,13 @@
       border: 1px solid rgba(0, 229, 255, 0.22);
       transition: background-color 0.25s, box-shadow 0.25s;
     }
+
     .progress-cells .p-cell.filled {
       background-color: #00e5ff;
       box-shadow: 0 0 6px rgba(0, 229, 255, 0.8);
       animation: popIn 0.3s ease;
     }
+
     .progress-text {
       font-size: 0.75rem;
       font-weight: 700;
@@ -739,6 +856,7 @@
     .screen {
       transition: opacity 0.18s ease;
     }
+
     .screen.fade-out {
       opacity: 0;
       pointer-events: none;
@@ -746,20 +864,45 @@
 
     /* #19: 問題カット画面演出 */
     @keyframes slashIn {
-      from { transform: scaleX(0); opacity: 0; }
-      to   { transform: scaleX(1); opacity: 1; }
+      from {
+        transform: scaleX(0);
+        opacity: 0;
+      }
+
+      to {
+        transform: scaleX(1);
+        opacity: 1;
+      }
     }
+
     @keyframes cutSlideR {
-      from { transform: translateX(60px); opacity: 0; }
-      to   { transform: translateX(0);    opacity: 1; }
+      from {
+        transform: translateX(60px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
+
     @keyframes cutSlideL {
-      from { transform: translateX(-60px); opacity: 0; }
-      to   { transform: translateX(0);     opacity: 1; }
+      from {
+        transform: translateX(-60px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
+
     .cut-inner {
       text-align: center;
     }
+
     .cut-slash {
       width: 200px;
       height: 3px;
@@ -767,9 +910,11 @@
       margin: 10px auto;
       animation: slashIn 0.3s ease 0.05s both;
     }
+
     #question-cut .question-number {
       animation: cutSlideR 0.35s ease both, rainbowText 2s linear infinite;
     }
+
     .cut-sub {
       font-size: 0.85rem;
       color: #8877cc;
@@ -783,10 +928,19 @@
       position: relative;
       overflow: hidden;
     }
+
     @keyframes floatCard {
-      0%, 100% { transform: rotate(var(--rot)) translateY(0px); }
-      50%       { transform: rotate(var(--rot)) translateY(-16px); }
+
+      0%,
+      100% {
+        transform: rotate(var(--rot)) translateY(0px);
+      }
+
+      50% {
+        transform: rotate(var(--rot)) translateY(-16px);
+      }
     }
+
     .title-bg-card {
       position: absolute;
       border-radius: 6px;
@@ -795,11 +949,20 @@
       pointer-events: none;
       animation: floatCard var(--dur, 5s) ease-in-out infinite;
     }
+
     /* スタートボタンのパルス */
     @keyframes btnPulse {
-      0%, 100% { box-shadow: 0 0 18px rgba(255,0,128,0.7),  0 4px 6px rgba(0,0,0,0.4); }
-      50%       { box-shadow: 0 0 36px rgba(255,0,128,0.95), 0 4px 14px rgba(0,0,0,0.4); }
+
+      0%,
+      100% {
+        box-shadow: 0 0 18px rgba(255, 0, 128, 0.7), 0 4px 6px rgba(0, 0, 0, 0.4);
+      }
+
+      50% {
+        box-shadow: 0 0 36px rgba(255, 0, 128, 0.95), 0 4px 14px rgba(0, 0, 0, 0.4);
+      }
     }
+
     #start-btn {
       animation: btnPulse 2s ease-in-out infinite;
     }
@@ -820,6 +983,7 @@
       border-radius: 999px;
       padding: 5px 8px;
     }
+
     #theme-switcher button {
       background: transparent;
       border: 1px solid rgba(255, 255, 255, 0.18);
@@ -834,10 +998,12 @@
       transition: all 0.18s;
       line-height: 1;
     }
+
     #theme-switcher button:hover {
       color: rgba(255, 255, 255, 0.8);
       border-color: rgba(255, 255, 255, 0.4);
     }
+
     #theme-switcher button.active {
       background: rgba(255, 255, 255, 0.18);
       color: #fff;
@@ -849,57 +1015,76 @@
     body[data-theme="wafuu"] {
       background-color: #1a0e04;
       background-image:
-        repeating-linear-gradient(0deg,  transparent, transparent 59px, rgba(155,123,42,0.07) 59px, rgba(155,123,42,0.07) 60px),
-        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(155,123,42,0.07) 59px, rgba(155,123,42,0.07) 60px);
+        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(155, 123, 42, 0.07) 59px, rgba(155, 123, 42, 0.07) 60px),
+        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(155, 123, 42, 0.07) 59px, rgba(155, 123, 42, 0.07) 60px);
     }
+
     body[data-theme="wafuu"] #app .fuda {
       background-color: #f0e4c4;
       border: 2px solid #9b7b2a;
       color: #1a0900;
       font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
       text-shadow: none;
-      box-shadow: 2px 2px 6px rgba(0,0,0,0.2), inset 0 0 10px rgba(155,123,42,0.07);
+      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(155, 123, 42, 0.07);
     }
+
     body[data-theme="wafuu"] #app .fuda:hover {
       border-color: #c4832a;
-      box-shadow: 0 0 14px rgba(196,131,42,0.45), 2px 6px 12px rgba(0,0,0,0.25);
+      box-shadow: 0 0 14px rgba(196, 131, 42, 0.45), 2px 6px 12px rgba(0, 0, 0, 0.25);
       transform: translateY(-3px);
     }
+
     body[data-theme="wafuu"] #app .fuda.wrong {
       border-color: #cc3333;
-      box-shadow: 0 0 10px rgba(204,51,51,0.35);
+      box-shadow: 0 0 10px rgba(204, 51, 51, 0.35);
     }
+
     body[data-theme="wafuu"] #app .fuda.correct {
       border-color: #2a7a4a;
-      background-color: rgba(42,122,74,0.12);
+      background-color: rgba(42, 122, 74, 0.12);
       color: #1a4a2a;
       text-shadow: none;
-      box-shadow: 0 0 18px rgba(42,122,74,0.35);
+      box-shadow: 0 0 18px rgba(42, 122, 74, 0.35);
     }
+
     body[data-theme="wafuu"] #app #kami-display {
       background-color: rgba(240, 218, 168, 0.95);
       border-color: #9b7b2a;
       color: #1a0900;
       text-shadow: none;
-      box-shadow: 0 0 16px rgba(155,123,42,0.25), inset 0 0 16px rgba(155,123,42,0.04);
+      box-shadow: 0 0 16px rgba(155, 123, 42, 0.25), inset 0 0 16px rgba(155, 123, 42, 0.04);
       font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
     }
-    body[data-theme="wafuu"] #app .progress-cells .p-cell {
-      border-color: rgba(155,123,42,0.3);
-      background-color: rgba(155,123,42,0.08);
+
+    body[data-theme="wafuu"] #app #kami-display #replay-btn {
+      color: #1a0900;
+      border-color: #9b7b2a;
     }
+
+    body[data-theme="wafuu"] #app #kami-display #replay-btn:hover {
+      color: #c4832a;
+      border-color: #c4832a;
+    }
+
+    body[data-theme="wafuu"] #app .progress-cells .p-cell {
+      border-color: rgba(155, 123, 42, 0.3);
+      background-color: rgba(155, 123, 42, 0.08);
+    }
+
     body[data-theme="wafuu"] #app .progress-cells .p-cell.filled {
       background-color: #9b7b2a;
-      box-shadow: 0 0 6px rgba(155,123,42,0.7);
+      box-shadow: 0 0 6px rgba(155, 123, 42, 0.7);
     }
+
     body[data-theme="wafuu"] #app .progress-text {
-      color: rgba(155,123,42,0.75);
+      color: rgba(155, 123, 42, 0.75);
     }
+
     @media (hover: none) {
       body[data-theme="wafuu"] #app .fuda:hover {
         transform: none;
         border-color: #9b7b2a;
-        box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
       }
     }
 
@@ -907,13 +1092,16 @@
     #kami-display {
       font-size: clamp(1.15rem, 4.5vw, 1.8rem);
     }
+
     #play-screen {
       padding-bottom: max(16px, env(safe-area-inset-bottom));
     }
+
     #title-screen,
     #result-screen {
       padding-bottom: max(24px, env(safe-area-inset-bottom));
     }
+
     @media (max-width: 480px) {
       body[data-theme="wafuu"] #app .fuda {
         min-height: 72px;
@@ -930,55 +1118,69 @@
       text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
       font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
     }
+
     body[data-theme="wafuu"] #app .tagline {
       color: #c4832a;
       text-shadow: none;
       animation: none;
     }
+
     body[data-theme="wafuu"] #app .title-bg-card {
       border-color: rgba(155, 123, 42, 0.32);
       background: rgba(155, 123, 42, 0.07);
     }
+
     /* how-to-play カード */
     body[data-theme="wafuu"] #app .how-to-play {
       background-color: rgba(40, 26, 8, 0.92);
       border: 3px solid #9b7b2a;
       box-shadow: 0 0 20px rgba(155, 123, 42, 0.35), inset 0 0 20px rgba(155, 123, 42, 0.05);
     }
+
     body[data-theme="wafuu"] #app .how-to-play h2 {
       color: #f0e4c4;
       text-shadow: none;
     }
+
     body[data-theme="wafuu"] #app .rules-list li {
       color: #e4d4a8;
     }
+
     body[data-theme="wafuu"] #app .rule-step {
       background: linear-gradient(135deg, #9b7b2a, #6a4a10);
       box-shadow: 0 0 8px rgba(155, 123, 42, 0.6);
     }
+
     body[data-theme="wafuu"] #app .rule-note {
       color: #b09860;
       border-top-color: rgba(155, 123, 42, 0.3);
     }
+
     body[data-theme="wafuu"] #app .rule-note strong {
       color: #d4502a;
       text-shadow: none;
     }
-    body[data-theme="wafuu"] #app .disclaimer {
+
+    body[data-theme="wafuu"] #app .disclaimer,
+    body[data-theme="wafuu"] #app .site-credit {
       color: #8a7344;
     }
+
     /* ボタン共通 */
     body[data-theme="wafuu"] #app .btn {
       background: linear-gradient(135deg, #c4832a 0%, #8a5a10 100%);
       box-shadow: 0 0 18px rgba(196, 131, 42, 0.55), 0 4px 6px rgba(0, 0, 0, 0.4);
     }
+
     body[data-theme="wafuu"] #app #start-btn {
       animation: none;
     }
+
     body[data-theme="wafuu"] #app .btn-secondary {
       background: linear-gradient(135deg, #4a3818 0%, #6a4e20 100%);
       box-shadow: 0 0 10px rgba(155, 123, 42, 0.4), 0 4px 6px rgba(0, 0, 0, 0.3);
     }
+
     /* 結果画面 */
     body[data-theme="wafuu"] #app #result-screen h2 {
       animation: none;
@@ -986,13 +1188,16 @@
       text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
       font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
     }
+
     body[data-theme="wafuu"] #app #result-screen .total-time {
       color: #c4832a;
       text-shadow: 0 0 15px rgba(196, 131, 42, 0.6);
     }
+
     body[data-theme="wafuu"] #app #result-screen .total-time .unit {
       color: #8a7344;
     }
+
     /* 問題カット画面 */
     body[data-theme="wafuu"] #app #question-cut .question-number {
       animation: cutSlideR 0.35s ease both;
@@ -1000,23 +1205,28 @@
       text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
       font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
     }
+
     body[data-theme="wafuu"] #app .cut-slash {
       background: linear-gradient(90deg, transparent, #c4832a, transparent);
     }
+
     body[data-theme="wafuu"] #app .cut-sub {
       color: #8a7344;
     }
+
     /* 和風: 正解トースト */
     body[data-theme="wafuu"] #correct-toast {
       background: rgba(40, 26, 8, 0.92);
       border-color: #9b7b2a;
       box-shadow: 0 0 24px rgba(155, 123, 42, 0.4);
     }
+
     body[data-theme="wafuu"] #correct-toast .toast-main {
       color: #f0e4c4;
       text-shadow: 0 0 12px rgba(196, 131, 42, 0.8);
       font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
     }
+
     body[data-theme="wafuu"] #correct-toast .toast-source {
       color: #c4b080;
     }
@@ -1029,6 +1239,7 @@
     #play-screen .play-header {
       gap: 8px;
     }
+
     .play-header-side {
       display: flex;
       align-items: center;
@@ -1036,6 +1247,7 @@
       flex: 1 1 0;
       min-width: 0;
     }
+
     .play-header-side.right {
       justify-content: flex-end;
     }
@@ -1053,19 +1265,34 @@
       line-height: 1;
       transition: color 0.12s ease, text-shadow 0.12s ease, transform 0.12s ease;
     }
+
     .live-timer.penalty-flash {
       color: #ff3b3b;
       text-shadow: 0 0 16px #ff3b3b, 0 0 28px #ff3b3b;
       transform: scale(1.12);
     }
+
     .timer-value {
       display: inline-block;
     }
+
     @keyframes penaltyPop {
-      0%   { opacity: 0; transform: translate(-50%, 0)     scale(0.8); }
-      20%  { opacity: 1; transform: translate(-50%, -10px) scale(1.1); }
-      100% { opacity: 0; transform: translate(-50%, -34px) scale(1); }
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.8);
+      }
+
+      20% {
+        opacity: 1;
+        transform: translate(-50%, -10px) scale(1.1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -34px) scale(1);
+      }
     }
+
     .penalty-pop {
       position: absolute;
       left: 50%;
@@ -1079,6 +1306,7 @@
       pointer-events: none;
       white-space: nowrap;
     }
+
     .penalty-pop.show {
       animation: penaltyPop 0.7s ease-out;
     }
@@ -1101,10 +1329,12 @@
       flex-shrink: 0;
       transition: color 0.15s, border-color 0.15s, background 0.15s;
     }
+
     .icon-btn:hover {
       color: #fff;
       border-color: rgba(255, 255, 255, 0.5);
     }
+
     .icon-btn.muted {
       color: #ff6b6b;
       border-color: rgba(255, 107, 107, 0.5);
@@ -1123,6 +1353,7 @@
       justify-content: center;
       margin-top: 4px;
     }
+
     .rank-letter {
       font-size: 5.5rem;
       font-weight: 900;
@@ -1130,12 +1361,14 @@
       letter-spacing: 0.05em;
       animation: rainbowText 1.6s linear infinite, popIn 0.5s ease;
     }
+
     .rank-comment {
       font-size: 1.15rem;
       font-weight: 700;
       color: #ffff00;
       text-shadow: 0 0 10px rgba(255, 255, 0, 0.6);
     }
+
     .new-record {
       display: none;
       font-size: 1rem;
@@ -1144,9 +1377,11 @@
       text-shadow: 0 0 12px #ff0080;
       animation: blink 0.8s step-start infinite;
     }
+
     .new-record.show {
       display: block;
     }
+
     .best-line {
       font-size: 0.85rem;
       color: #8877cc;
@@ -1159,14 +1394,17 @@
       text-shadow: 0 0 16px rgba(196, 131, 42, 0.6);
       font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
     }
+
     body[data-theme="wafuu"] #app .rank-comment {
       color: #c4832a;
       text-shadow: none;
     }
+
     body[data-theme="wafuu"] #app .new-record {
       color: #d4502a;
       text-shadow: none;
     }
+
     body[data-theme="wafuu"] #app .best-line {
       color: #8a7344;
     }
@@ -1186,6 +1424,7 @@
       margin: 4px auto 0;
       -webkit-overflow-scrolling: touch;
     }
+
     .rb-row {
       display: flex;
       flex-direction: column;
@@ -1197,32 +1436,46 @@
       font-size: 0.85rem;
       text-align: left;
     }
+
     .rb-row.wrong {
       border-left-color: #ff3b3b;
     }
+
     .rb-head {
       display: grid;
       grid-template-columns: auto auto auto 1fr auto;
       align-items: center;
       gap: 8px;
     }
+
     .rb-q {
       font-weight: 700;
       color: #b8a8e0;
       white-space: nowrap;
     }
+
     .rb-mark {
       font-weight: 900;
       line-height: 1;
     }
-    .rb-row.correct .rb-mark { color: #00ff88; text-shadow: 0 0 6px rgba(0, 255, 136, 0.5); }
-    .rb-row.wrong   .rb-mark { color: #ff3b3b; text-shadow: 0 0 6px rgba(255, 59, 59, 0.5); }
+
+    .rb-row.correct .rb-mark {
+      color: #00ff88;
+      text-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
+    }
+
+    .rb-row.wrong .rb-mark {
+      color: #ff3b3b;
+      text-shadow: 0 0 6px rgba(255, 59, 59, 0.5);
+    }
+
     .rb-time {
       font-variant-numeric: tabular-nums;
       font-weight: 700;
       color: #e8d5ff;
       white-space: nowrap;
     }
+
     .rb-penalty {
       font-size: 0.72rem;
       color: #ff7b7b;
@@ -1230,12 +1483,14 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .rb-badge {
       font-size: 0.68rem;
       font-weight: 700;
       white-space: nowrap;
       justify-self: end;
     }
+
     .rb-detail {
       display: flex;
       flex-direction: column;
@@ -1243,6 +1498,7 @@
       padding-top: 6px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
+
     .rb-line {
       display: grid;
       grid-template-columns: 3.4em 1fr;
@@ -1250,63 +1506,123 @@
       font-size: 0.78rem;
       line-height: 1.4;
     }
+
     .rb-key {
       color: #8877cc;
       font-weight: 700;
       white-space: nowrap;
     }
+
     .rb-val {
       color: #d8c8f5;
       word-break: break-word;
     }
-    .rb-row.fastest { box-shadow: 0 0 10px rgba(0, 229, 255, 0.28); }
-    .rb-row.slowest { box-shadow: 0 0 10px rgba(255, 170, 0, 0.22); }
-    .rb-row.fastest .rb-badge { color: #00e5ff; text-shadow: 0 0 6px rgba(0, 229, 255, 0.7); }
-    .rb-row.slowest .rb-badge { color: #ffaa00; text-shadow: 0 0 6px rgba(255, 170, 0, 0.7); }
+
+    .rb-row.fastest {
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.28);
+    }
+
+    .rb-row.slowest {
+      box-shadow: 0 0 10px rgba(255, 170, 0, 0.22);
+    }
+
+    .rb-row.fastest .rb-badge {
+      color: #00e5ff;
+      text-shadow: 0 0 6px rgba(0, 229, 255, 0.7);
+    }
+
+    .rb-row.slowest .rb-badge {
+      color: #ffaa00;
+      text-shadow: 0 0 6px rgba(255, 170, 0, 0.7);
+    }
 
     /* #14 和風テーマ */
     body[data-theme="wafuu"] #app .rb-row {
       background: rgba(40, 26, 8, 0.7);
       border-left-color: #2a7a4a;
     }
-    body[data-theme="wafuu"] #app .rb-row.wrong { border-left-color: #cc3333; }
-    body[data-theme="wafuu"] #app .rb-q { color: #c4b080; }
-    body[data-theme="wafuu"] #app .rb-row.correct .rb-mark { color: #2a7a4a; text-shadow: none; }
-    body[data-theme="wafuu"] #app .rb-row.wrong   .rb-mark { color: #cc3333; text-shadow: none; }
-    body[data-theme="wafuu"] #app .rb-time { color: #f0e4c4; }
-    body[data-theme="wafuu"] #app .rb-penalty { color: #d4502a; }
-    body[data-theme="wafuu"] #app .rb-detail { border-top-color: rgba(155, 123, 42, 0.25); }
-    body[data-theme="wafuu"] #app .rb-key { color: #b09860; }
-    body[data-theme="wafuu"] #app .rb-val { color: #e4d4a8; }
-    body[data-theme="wafuu"] #app .rb-row.fastest .rb-badge { color: #6a9b6a; text-shadow: none; }
-    body[data-theme="wafuu"] #app .rb-row.slowest .rb-badge { color: #c4832a; text-shadow: none; }
+
+    body[data-theme="wafuu"] #app .rb-row.wrong {
+      border-left-color: #cc3333;
+    }
+
+    body[data-theme="wafuu"] #app .rb-q {
+      color: #c4b080;
+    }
+
+    body[data-theme="wafuu"] #app .rb-row.correct .rb-mark {
+      color: #2a7a4a;
+      text-shadow: none;
+    }
+
+    body[data-theme="wafuu"] #app .rb-row.wrong .rb-mark {
+      color: #cc3333;
+      text-shadow: none;
+    }
+
+    body[data-theme="wafuu"] #app .rb-time {
+      color: #f0e4c4;
+    }
+
+    body[data-theme="wafuu"] #app .rb-penalty {
+      color: #d4502a;
+    }
+
+    body[data-theme="wafuu"] #app .rb-detail {
+      border-top-color: rgba(155, 123, 42, 0.25);
+    }
+
+    body[data-theme="wafuu"] #app .rb-key {
+      color: #b09860;
+    }
+
+    body[data-theme="wafuu"] #app .rb-val {
+      color: #e4d4a8;
+    }
+
+    body[data-theme="wafuu"] #app .rb-row.fastest .rb-badge {
+      color: #6a9b6a;
+      text-shadow: none;
+    }
+
+    body[data-theme="wafuu"] #app .rb-row.slowest .rb-badge {
+      color: #c4832a;
+      text-shadow: none;
+    }
 
     /* 狭い画面向けの調整 */
     @media (max-width: 480px) {
       .live-timer {
         font-size: 1.25rem;
       }
+
       .progress-cells .p-cell {
         width: 8px;
       }
+
       #play-screen .play-header .btn-small {
         padding: 6px 10px;
         font-size: 0.68rem;
       }
+
       .icon-btn {
         width: 30px;
         height: 30px;
         font-size: 0.85rem;
       }
+
       .rank-letter {
         font-size: 4.5rem;
       }
+
       .rank-comment {
         font-size: 1rem;
       }
+
       .result-breakdown {
         max-height: 28vh;
       }
+
       .rb-row {
         gap: 6px;
         padding: 7px 10px;
@@ -1345,9 +1661,17 @@
         <p class="rule-note">誤答は <strong>+3秒</strong> のタイムペナルティ</p>
       </div>
 
-      <button id="start-btn" class="btn">★ スタート ★</button>
+      <div class="start-buttons" aria-label="難易度を選んで開始">
+        <button id="start-normal" class="btn">NORMAL</button>
+        <button id="start-extreme" class="btn btn-extreme">EXTREME</button>
+      </div>
+      <p class="mode-note">EXTREMEは上の句が音声で読み上げられるコミュニケーション実践モードです！<br>
+        より「カルタ」らしい雰囲気で遊んでいただけます。</p>
 
       <p class="disclaimer">このゲームはニコニコ大百科・ピクシブ百科事典・友人との会話を参照しているため、原作の表現とは一部異なる可能性が高いです。ご了承ください。</p>
+      <p class="disclaimer">読み上げ音声<br>
+        VOICEVOX:ずんだもん</p>
+      <p class="site-credit"><a href="https://clank.work/" target="_blank" rel="noopener noreferrer">&copy; 2026 Clank</a></p>
 
     </section>
 
@@ -1381,7 +1705,10 @@
       </div>
       <div id="kami-display">
         <span class="kami-text" id="kami-text"></span>
+        <p class="kami-audio-hint">🎧 上の句を聴いて<br>下の句を選べ！</p>
+        <button type="button" id="replay-btn" class="btn-small">🔊 もう一度聴く</button>
       </div>
+      <audio id="kami-audio" preload="auto"></audio>
       <div id="fuda-grid">
         <!-- 9 fuda cards generated by JS -->
       </div>
@@ -1413,6 +1740,7 @@
         <button id="retry-btn" class="btn btn-secondary">もう一度遊ぶ</button>
         <button id="result-back-btn" class="btn-small">タイトルに戻る</button>
       </div>
+      <p class="site-credit"><a href="https://clank.work/" target="_blank" rel="noopener noreferrer">&copy; 2026 Clank</a></p>
     </section>
 
     <!-- #22 テーマスイッチャー -->
@@ -1423,6 +1751,8 @@
 
   </div>
 
+  <!-- データは <script> で読み込む（file:// でも fetch 制限を受けずに動く） -->
+  <script src="data/memes.js"></script>
   <script src="js/game.js"></script>
 </body>
 
