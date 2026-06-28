@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   VOICEVOX を使って data/memes.json の上の句を一括で読み上げ音声(WAV)に変換する。
 
