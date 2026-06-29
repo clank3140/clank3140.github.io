@@ -491,6 +491,11 @@
       box-shadow: 0 0 30px rgba(0, 229, 255, 0.9), 0 6px 10px rgba(0, 0, 0, 0.4);
     }
 
+    .btn-text-bottom {
+      font-size: 0.7rem;
+      font-weight: normal;
+    }
+
     .mode-note {
       font-size: 0.8rem;
       color: #aa99ee;
@@ -1664,8 +1669,9 @@
       </div>
 
       <div class="start-buttons" aria-label="難易度を選んで開始">
-        <button id="start-normal" class="btn">TEXT</button>
-        <button id="start-extreme" class="btn btn-extreme">VOICE</button>
+        <button id="start-normal" class="btn">TEXT<br><span class="btn-text-bottom">-NORMAL-</span></button>
+        <button id="start-extreme" class="btn btn-extreme">VOICE<br><span
+            class="btn-text-bottom">-EXTREME-</span></button>
       </div>
       <p class="mode-note">VOICEは上の句が音声で読み上げられるコミュニケーション実践モードです！<br>
         より「カルタ」らしい雰囲気で遊んでいただけます。</p>
