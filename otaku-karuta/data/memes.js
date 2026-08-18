@@ -2,7 +2,7 @@ window.KARUTA_MEMES = [
   {
     "id": 1,
     "kami": "ぬるぽ",
-    "shimo": "ガッ",
+    "shimo": "ｶﾞｯ",
     "source": "2ch"
   },
   {
